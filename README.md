@@ -47,7 +47,10 @@ Creating a footnote is incredibly simple - you just need to include your footnot
 
 The footnote will then appear at the bottom of your post/page.
 
-<p align="right"><a href="https://wordpress.org/plugins/footnotes-made-easy/"><img src="https://img.shields.io/wordpress/plugin/dt/footnotes-made-easy?label=wp.org%20downloads&style=for-the-badge"> <img src="https://img.shields.io/wordpress/plugin/stars/footnotes-made-easy?color=orange&style=for-the-badge"></a></p>
+<p align="right"><a href="https://wordpress.org/plugins/awesome-footnotes/"><img src="https://img.shields.io/wordpress/plugin/dt/awesome-footnotes?label=wp.org%20downloads&style=for-the-badge"> <img src="https://img.shields.io/wordpress/plugin/stars/awesome-footnotes?color=orange&style=for-the-badge"></a></p>
+
+You can test the plugin in WP playground here:
+<a href="https://playground.wordpress.net/?plugin=awesome-footnotes&networking=yes">WP Playground test</a>
 
 ## Hooks
 

@@ -13,6 +13,8 @@ Allows post authors to easily add and manage footnotes in posts.
 
 **WordPress Footnotes** plugin is a powerful method of adding **footnotes** into your posts and pages. You can have as many **footnotes** as you like pretty easily in every page, post or ACF block, WooCommerce is also supported. That is the fastest footnote plugin which is using extremely low resources - you wont even notice that it is there.
 
+**Please visit the [Github page](https://github.com/sdobreff/footnotes/ "Github") for the latest code development, planned enhancements and known issues**.
+
 ## Key features include...
 
 * Simple footnote insertion via markup of choice (default - double parentheses)
