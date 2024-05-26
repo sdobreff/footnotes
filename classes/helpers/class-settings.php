@@ -28,7 +28,7 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 	 */
 	class Settings {
 
-		public const OPTIONS_VERSION = '10'; // Incremented when the options array changes.
+		public const OPTIONS_VERSION = '11'; // Incremented when the options array changes.
 
 		public const MENU_SLUG = 'awef_settings';
 
@@ -185,8 +185,6 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 			$footnotes_options['back_link_title'] = ( array_key_exists( 'back_link_title', $post_array ) ) ? sanitize_text_field( $post_array['back_link_title'] ) : '';
 			$footnotes_options['css_footnotes']   = ( array_key_exists( 'css_footnotes', $post_array ) ) ? _sanitize_text_fields( $post_array['css_footnotes'], true ) : '';
 
-			$footnotes_options['acf_show_footnotes'] = ( array_key_exists( 'acf_show_footnotes', $post_array ) ) ? true : false;
-
 			$footnotes_options['no_display_post'] = ( array_key_exists( 'no_display_post', $post_array ) ) ? true : false;
 
 			// add_settings_error(AWEF_SETTINGS_NAME, '<field_name>', 'Please enter a valid email!', $type = 'error'); .
@@ -271,7 +269,6 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 					'back_link_title'          => __( 'Jump back to text', 'awesome-footnotes' ),
 					'css_footnotes'            => 'ol.footnotes { color:#666666; }' . "\n" . 'ol.footnotes li { font-size:80%; }',
 					'no_editor_header_footer'  => false,
-					'acf_show_footnotes'       => true,
 					'no_display_post'          => false,
 					'position_before_footnote' => false,
 				);

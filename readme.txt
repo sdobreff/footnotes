@@ -3,7 +3,7 @@ Tags: footnotes, formatting, notes, reference
 Requires at least: 6.0
 Tested up to: 6.5.2
 Requires PHP: 7.4
-Stable tag: 3.3.1
+Stable tag: 3.3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,19 +13,19 @@ Allows post authors to easily add and manage footnotes in posts.
 
 **WordPress Footnotes** plugin is a powerful method of adding **footnotes** into your posts and pages. You can have as many **footnotes** as you like pretty easily in every page, post or ACF block, WooCommerce is also supported. That is the fastest footnote plugin which is using extremely low resources - you wont even notice that it is there.
 
-**Please visit the [Github page](https://github.com/sdobreff/footnotes/ "Github") for the latest code development, planned enhancements and known issues**.
+You can visit the [Github page](https://github.com/sdobreff/footnotes/ "Github") for the latest code development, or if you want to report an issue with the code.
 
 ## Key features include...
 
 * Simple footnote insertion via markup of choice (default - double parentheses)
 * Gutenberg support
-* Combine identical footnotes
+* Combine identical **footnotes**
 * Paginated posts are supported
-* Suppress Footnotes on specific page types
+* Suppress **Footnotes** on specific page types
 * Option to display ‘pretty’ tooltips using jQuery
 * Lots of configuration options
 
-WP Footnotes plugin is designed to ease the creation of a new footnote. It also gives you the ability to easily switch from most of the existing footnotes plugins to this one. Lets face it - almost 100% of them are abandoned or in awful condition. It supports PHP8, it is written using best practices and follows the WordPress standards, give it a try. You can quickly check the plugin [here](https://playground.wordpress.net/?plugin=awesome-footnotes&networking=yes "WP Playground")
+**WordPress Footnotes** plugin is designed to ease the creation of a new footnote. It also gives you the ability to easily switch from most of the existing **footnotes** plugins to this one. Lets face it - almost 100% of them are abandoned or in awful condition. It supports PHP8, it is written using best practices and follows the WordPress standards, give it a try. You can quickly check the plugin [here](https://playground.wordpress.net/?plugin=awesome-footnotes&networking=yes "WP Playground")
 
 ## Technical specification...
 
@@ -35,7 +35,7 @@ WP Footnotes plugin is designed to ease the creation of a new footnote. It also 
 
 == Getting Started ==
 
-Creating a footnote is incredibly simple - you just need to include your footnote in double parentheses (default, but you can change that), such as this:
+Creating a footnote is incredibly simple - you just need to include your **footnote** in double parentheses (default, but you can change that), such as this:
 
 This is a sentence ((and this is your footnote)).
 
@@ -109,6 +109,9 @@ Lets say currently you are using plugin which marks a footnote like this:
  [[this will be a footnote]]
 Then go to settings and change the Open and Close footnote tag to "[[" and "]]" respectively.
 
+= I have multiple sites - can I use the exact same settings for each of them? =
+Yes - there is an import/export functionality in the plugin - just make the changes, export them, and then include where you want. Or store them, so you can always get back to them.
+
 = Other than the available options, can the footnotes output be styled? =
 Yes it can. The easiest way is to use the CSS editor in your theme customizer. For example, 'ol.footnotes' refers to the footnotes list in general and 'ol.footnotes li' the individual footnotes. You can edit the styling in the plugin settings directly (Options page), or empty the styling and use your own the way it fits your needs best.
 CSS classes plugin is using are:
@@ -128,17 +131,20 @@ Yes. You can use the Awesome Footnotes button in the toolbar of the Block Editor
 4. Plugin in standard editor
 
 == Change Log ==
+= 3.3.2 =
+Removed ACF from options and settings - the ACF (if detected) is automatically enabled.
+
 = 3.3.1 =
 Typo fixes
 
 = 3.3.0 =
-* Compatibility checks with other plugins, option to put back links before the footnote text, system status improvements, code optimizations, 
+* Compatibility checks with other plugins, option to put back links before the footnote text, system status improvements, code optimizations.
 
 = 3.2.3 =
-* Extracting MySQL version fix
+* Extracting MySQL version fix.
 
 = 3.2.2 =
-* Typo fix. Added check for function existence as WordPress playground has a lack of that functionality
+* Typo fix. Added check for function existence as WordPress playground has a lack of that functionality.
 
 = 3.2.1 =
 * WordPress playground fix.
@@ -147,16 +153,16 @@ Typo fixes
 * Code fixes and optimizations. Added system info tab.
 
 = 3.1.0 =
-* Added support for multiple ACF block in single post
+* Added support for multiple ACF block in single post.
 
 = 3.0.1 =
-* Updated readme file
+* Updated readme file.
 
 = 3.0.0 =
-* Plugin is rewritten to use the best practices and improved performance. PHP 8 is fully supported
+* Plugin is rewritten to use the best practices and improved performance. PHP 8 is fully supported.
 
 = 2.0.0 =
-* Improved support and standards
+* Improved support and standards.
 
 = 1.0.0 =
-* Initial release
+* Initial release.
