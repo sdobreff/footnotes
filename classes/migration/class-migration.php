@@ -4,7 +4,7 @@
  *
  * @package    awe
  * @subpackage migration
- * @copyright  2024
+ * @copyright  %%YEAR%%
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  */
 

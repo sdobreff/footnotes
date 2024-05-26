@@ -27,15 +27,6 @@ use AWEF\Helpers\Settings;
 				'type'  => 'header',
 			)
 		);
-
-		Settings::build_option(
-			array(
-				'name'    => esc_html__( 'Show footnotes in ACF', 'awesome-footnotes' ),
-				'id'      => 'acf_show_footnotes',
-				'type'    => 'checkbox',
-				'default' => Settings::get_current_options()['acf_show_footnotes'],
-			)
-		);
 	}
 
 	// Pretty tooltips formatting.

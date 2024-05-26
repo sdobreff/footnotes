@@ -3,7 +3,7 @@
  * Responsible for plugin initialization.
  *
  * @package    awe
- * @copyright  2024 Footnotes
+ * @copyright  %%YEAR%% Footnotes
  * @license    https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link       https://wordpress.org/plugins/awesome-footnotes/
  *
