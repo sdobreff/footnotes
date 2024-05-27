@@ -17,18 +17,6 @@ use AWEF\Helpers\Settings;
 		)
 	);
 
-	if ( class_exists( 'ACF' ) ) {
-
-		// ACF support.
-		Settings::build_option(
-			array(
-				'title' => esc_html__( 'Advanced Custom Fields support', 'awesome-footnotes' ),
-				'id'    => 'acf-format-settings',
-				'type'  => 'header',
-			)
-		);
-	}
-
 	// Pretty tooltips formatting.
 	Settings::build_option(
 		array(

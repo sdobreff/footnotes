@@ -3,7 +3,7 @@ Tags: footnotes, formatting, notes, reference
 Requires at least: 6.0
 Tested up to: 6.5.2
 Requires PHP: 7.4
-Stable tag: 3.3.2
+Stable tag: 3.3.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -37,7 +37,7 @@ You can visit the [Github page](https://github.com/sdobreff/footnotes/ "Github")
 
 Creating a footnote is incredibly simple - you just need to include your **footnote** in double parentheses (default, but you can change that), such as this:
 
-This is a sentence ((and this is your footnote)).
+This is a sentence **((and this is your footnote))**.
 
 You can change the markup for the footnote in the settings page of the plugin.
 
@@ -45,15 +45,15 @@ The footnote will then appear at the bottom of your post/page.
 
 Don't put footnotes in short description / excerpts - the plugin won't work there by design.
 
-Or you can use a shortcode for where you want your footnotes to appear. The shortcode is "awef_show_footnotes". The shortcode also accepts a parameter of the post id in format of 'post_id=1'. If not presented, the global \WP_Post object will be used. 
+Or you can use a shortcode for where you want your footnotes to appear. The shortcode is "`awef_show_footnotes`". The shortcode also accepts a parameter of the post id in format of 'post_id=1'. If not presented, the global \WP_Post object will be used. 
 
 You can also use a PHP call in your templates or whatever you like by using the following:
-AWEF\Controllers\Footnotes_Formatter::show_footnotes( array( 'post_id' => 1 ) );
+`AWEF\Controllers\Footnotes_Formatter::show_footnotes( array( 'post_id' => 1 ) );`
 Note: If you choose this way (above), you have to go to the plugin settings, and set "Do not autodisplay in posts" to true.
 
-**Advanced Custom Fields (ACF)** are also supported, if the ACF is installed you will see new setting in formatting page of the settings of the plugin.
+**Advanced Custom Fields (ACF)** are also supported out of the box - just read and keep in mind this:
 
-Unfortunately there are limitations with the ACF because of its block structure. There is no way to guess how many blocks are there, which is first, second, are there more blocks or not … So every block will show its own footnotes, and shortcodes are not working outside them. Currently there is no way to achieve that functionality.
+Unfortunately there are limitations with the **ACF** because of its block structure. There is no way to guess how many blocks are there, which is first, second, are there more blocks or not … So every block will show its own footnotes, and shortcodes are not working outside them. Currently there is no way to achieve that functionality.
 
 What plugin does is to keep track of the footnotes and keep proper numbering among the blocks (again there is no way to guess which is which, so they are parsed in order of their callings from backend, but they can be shown in entirely different places on the front end.)
 
@@ -72,9 +72,9 @@ You have a fair few options on how the identifier links, footnotes and back-link
 
 == Shortcode options ==
 
-[awef_show_footnotes] Is the shortcode you should use. Inside the post content, there is nothing more that you have to do.
+`[awef_show_footnotes]` Is the shortcode you should use. Inside the post content, there is nothing more that you have to do.
 If you want to use the shortcode outside of the post content, then you need to add the post id as a parameter:
-[awef_show_footnotes post_id=1]
+`[awef_show_footnotes post_id=1]`
 If outside of the post content, and there is no parameter of the post id provided, then the plugin will try to use the global post if presented.
 
 == Paginated Posts ==
@@ -131,6 +131,9 @@ Yes. You can use the Awesome Footnotes button in the toolbar of the Block Editor
 4. Plugin in standard editor
 
 == Change Log ==
+= 3.3.3 =
+Bug fixes related to the proper footnotes numbering in the text.
+
 = 3.3.2 =
 Removed ACF from options and settings - the ACF (if detected) is automatically enabled.
 

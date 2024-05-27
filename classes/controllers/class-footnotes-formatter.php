@@ -44,6 +44,15 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 		public static $pos = 0;
 
 		/**
+		 * Global block position variable - keeps track of current (last used) block. Handy when there are many blocks with content and not single post content.
+		 *
+		 * @var integer
+		 *
+		 * @since 3.3.3
+		 */
+		public static $block_starting_pos = -1;
+
+		/**
 		 * Array with the styles
 		 *
 		 * @var array
@@ -78,8 +87,6 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 		 */
 		public static function init() {
 
-			// \add_filter( 'awef_process_content_hooks', array( __CLASS__, 'acf_footnotes' ) );
-
 			/**
 			 * Apply the content filters - parses the content and adds the extracted footnotes
 			 *
@@ -108,7 +115,7 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 		}
 
 		/**
-		 * Funciton for processing all the ACF bloks and extract the footnotes from them
+		 * Function for processing all the ACF blocks and extract the footnotes from them
 		 *
 		 * @param string $value - The content of the ACF block.
 		 * @param int    $post_id - The post ID that ACF block has association with.
@@ -170,23 +177,6 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 		}
 
 		/**
-		 * Should we show footnotes in the ACF fields?
-		 *
-		 * @param array $hooks - The array of hooks.
-		 *
-		 * @return array
-		 *
-		 * @since 2.4.0
-		 */
-		public static function acf_footnotes( array $hooks ): array {
-			if ( class_exists( 'ACF' ) && Settings::get_current_options()['acf_show_footnotes'] ) {
-				$hooks[] = 'acf_the_content';
-			}
-
-			return $hooks;
-		}
-
-		/**
 		 * Insert additional CSS
 		 *
 		 * Add additional CSS to the page for the footnotes styling
@@ -242,14 +232,6 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 				array(),
 				\AWEF_VERSION
 			);
-
-			\wp_register_script(
-				'wp-footnotes-endnotes',
-				\AWEF_PLUGIN_ROOT_URL . 'js/endnotes.js',
-				array(),
-				\AWEF_VERSION,
-				true
-			);
 		}
 
 		/**
@@ -262,6 +244,22 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 		public static function print_script() {
 			\wp_print_scripts( 'wp-footnotes-tooltips' );
 			\wp_print_styles( 'wp-footnotes-tt-style' );
+
+			// echo '
+			// <script type="module">
+			// import footnotes from "' . \AWEF_PLUGIN_ROOT_URL . 'js/endnotes.js?' . \rand() . '"
+			// let opt = {
+			// before_hook: anchor => {
+			// document.querySelector(\'h1\').style.color = \'red\'
+			// },
+			// after_hook: anchor => {
+			// document.querySelector(\'h1\').style.color = \'initial\'
+			// }
+			// }
+			// footnotes(\'a.footnote-identifier-link\', opt)
+			// </script>';
+
+			// \wp_print_styles( 'wp-footnotes-endnotes-style' );
 		}
 
 		/**
@@ -381,11 +379,13 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 			// Display identifiers.
 			foreach ( $identifiers as $key => $identifier ) {
 
-				$id_id      = self::HTML_TAG_NAME . $key + $start_number . '_' . $post->ID;
-				$id_num     = ( 'decimal' === $style ) ? $identifier['use_footnote'] + $start_number : self::convert_num( $identifier['use_footnote'] + $start_number, $style, $key );
+				$id_id = self::HTML_TAG_NAME . $key + $start_number . '_' . $post->ID;
+
+				$id_num_text = ( 'decimal' === $style ) ? $identifier['position_number'] : self::convert_num( $identifier['use_footnote'], $style, $key );
+
 				$id_href    = ( ( $use_full_link ) ? \get_permalink( $post->ID ) : '' ) . '#footnote_' . ( $identifier['use_footnote'] + $start_number ) . '_' . $post->ID;
 				$id_title   = str_replace( '"', '&quot;', htmlentities( html_entity_decode( \wp_strip_all_tags( $identifier['text'] ), ENT_QUOTES, 'UTF-8' ), ENT_QUOTES, 'UTF-8' ) );
-				$id_replace = Settings::get_current_options()['pre_identifier'] . '<a href="' . $id_href . '" id="' . $id_id . '" class="footnote-link footnote-identifier-link" title="' . $id_title . '">' . Settings::get_current_options()['inner_pre_identifier'] . $id_num . Settings::get_current_options()['inner_post_identifier'] . '</a>' . Settings::get_current_options()['post_identifier'];
+				$id_replace = Settings::get_current_options()['pre_identifier'] . '<a href="' . $id_href . '" id="' . $id_id . '" class="footnote-link footnote-identifier-link" title="' . $id_title . '">' . Settings::get_current_options()['inner_pre_identifier'] . $id_num_text . Settings::get_current_options()['inner_post_identifier'] . '</a>' . Settings::get_current_options()['post_identifier'];
 				if ( Settings::get_current_options()['superscript'] ) {
 					$id_replace = '<sup>' . $id_replace . '</sup>';
 				}
@@ -433,6 +433,14 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 
 			$identifiers = self::extract_current_notes( $data, $post_id );
 
+			// Check for and setup the starting number.
+			$start_number = 1 + self::$block_starting_pos;
+			if ( false !== \mb_strpos( $data, 'startnum' ) ) {
+				$start_number = (int) ( ( 1 === preg_match( '|<!\-\-startnum=(\d+)\-\->|', $data, $start_number_array ) ) ? $start_number_array[1] : 1 );
+			}
+
+			$position = $start_number;
+
 			// Create 'em.
 			foreach ( array_keys( $identifiers ) as $i ) {
 
@@ -466,13 +474,16 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 			foreach ( array_keys( $identifiers ) as $i ) {
 				// if we're combining identical notes check if we've already got one like this & record keys.
 
+				$identifiers[ $i ]['position_number'] = $position;
+
 				if ( Settings::get_current_options()['combine_identical_notes'] ) {
 					// $footnotes_count = count( $footnotes );
 					// for ( $j = 0; $j < $footnotes_count; $j++ ) {
 					foreach ( array_keys( $footnotes ) as $j ) {
 						if ( $footnotes[ $j ]['text'] === $identifiers[ $i ]['text'] ) {
-							$identifiers[ $i ]['use_footnote'] = $j;
-							$footnotes[ $j ]['identifiers'][]  = $i;
+							$identifiers[ $i ]['use_footnote']    = $j;
+							$identifiers[ $i ]['position_number'] = $identifiers[ $j ]['position_number'];
+							$footnotes[ $j ]['identifiers'][]     = $i;
 							break;
 						}
 					}
@@ -486,6 +497,8 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 					$footnotes[ $i ]['text']           = $identifiers[ $i ]['text'];
 					$footnotes[ $i ]['symbol']         = isset( $identifiers[ $i ]['symbol'] ) ? $identifiers[ $i ]['symbol'] : '';
 					$footnotes[ $i ]['identifiers'][]  = $i;
+
+					++$position;
 				}
 			}
 
@@ -668,6 +681,7 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 
 				return self::$identifiers[ $post_id ];
 			} else {
+				++self::$block_starting_pos;
 				self::$identifiers[ $post_id ] = array();
 				$raw_notes                     = \explode( Settings::get_current_options()['footnotes_open'], $data );
 
