@@ -44,6 +44,15 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 		public static $pos = 0;
 
 		/**
+		 * Global post variable - keeps track of current post. Used to null to position if current post changes. Used when in loops.
+		 *
+		 * @var integer
+		 *
+		 * @since 3.4.0
+		 */
+		public static $current_post = 0;
+
+		/**
 		 * Global block position variable - keeps track of current (last used) block. Handy when there are many blocks with content and not single post content.
 		 *
 		 * @var integer
@@ -170,9 +179,13 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 				return '';
 			} elseif ( ! $atts['post_id'] ) {
 
-				echo self::get_footnotes_markup( $post ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				return self::get_footnotes_markup( $post ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			} else {
-				echo self::get_footnotes_markup( \get_post( (int) $atts['post_id'] ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				if ( null === $selected_post = \get_post( (int) $atts['post_id'] ) ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.Found, Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure
+					return '';
+				}
+
+				return self::get_footnotes_markup( $selected_post ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 		}
 
@@ -284,6 +297,17 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 				return $data;
 			}
 
+			if ( 0 === self::$current_post ) {
+				// The inner post id cache variable is not initialized. Set it to the current post id and leave.
+				self::$current_post = $post->ID;
+			} elseif ( self::$current_post !== $post->ID ) {
+				// The post has changed - we are in loop (probably) null the class variables.
+				self::$pos                = 0;
+				self::$block_starting_pos = -1;
+
+				self::$current_post = $post->ID;
+			}
+
 			// Check whether we are displaying them or not.
 			$display = true;
 			if ( Settings::get_current_options()['no_display_home'] && is_home() ) {
@@ -368,11 +392,11 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 			// Footnotes and identifiers are stored in the array.
 
 			$use_full_link = false;
-			if ( is_feed() ) {
+			if ( \is_feed() ) {
 				$use_full_link = true;
 			}
 
-			if ( is_preview() ) {
+			if ( \is_preview() ) {
 				$use_full_link = false;
 			}
 

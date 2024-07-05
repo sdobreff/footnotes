@@ -18,3 +18,8 @@
   #footnotes_dialog_12c1b560_content > p:last-child {
     margin-bottom: 0;
   }
+
+.animate{
+    transition: opacity 1s;
+    opacity: 0;
+}
