@@ -153,12 +153,12 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 			$footnotes_options['backlink']      = ( array_key_exists( 'backlink', $post_array ) ) ? sanitize_text_field( $post_array['backlink'] ) : '';
 			$footnotes_options['post_backlink'] = ( array_key_exists( 'post_backlink', $post_array ) ) ? sanitize_text_field( $post_array['post_backlink'] ) : '';
 
-			$footnotes_options['pre_identifier']        = ( array_key_exists( 'pre_identifier', $post_array ) ) ? sanitize_text_field( $post_array['pre_identifier'] ) : '';
-			$footnotes_options['inner_pre_identifier']  = ( array_key_exists( 'inner_pre_identifier', $post_array ) ) ? sanitize_text_field( $post_array['inner_pre_identifier'] ) : '';
-			$footnotes_options['list_style_type']       = ( array_key_exists( 'list_style_type', $post_array ) ) ? sanitize_text_field( $post_array['list_style_type'] ) : '';
-			$footnotes_options['inner_post_identifier'] = ( array_key_exists( 'inner_post_identifier', $post_array ) ) ? sanitize_text_field( $post_array['inner_post_identifier'] ) : '';
-			$footnotes_options['post_identifier']       = ( array_key_exists( 'post_identifier', $post_array ) ) ? sanitize_text_field( $post_array['post_identifier'] ) : '';
-			$footnotes_options['list_style_symbol']     = ( array_key_exists( 'list_style_symbol', $post_array ) ) ? sanitize_text_field( $post_array['list_style_symbol'] ) : '';
+			$footnotes_options['pre_identifier']        = ( array_key_exists( 'pre_identifier', $post_array ) ) ? \sanitize_text_field( $post_array['pre_identifier'] ) : '';
+			$footnotes_options['inner_pre_identifier']  = ( array_key_exists( 'inner_pre_identifier', $post_array ) ) ? \sanitize_text_field( $post_array['inner_pre_identifier'] ) : '';
+			$footnotes_options['list_style_type']       = ( array_key_exists( 'list_style_type', $post_array ) ) ? \sanitize_text_field( $post_array['list_style_type'] ) : '';
+			$footnotes_options['inner_post_identifier'] = ( array_key_exists( 'inner_post_identifier', $post_array ) ) ? \sanitize_text_field( $post_array['inner_post_identifier'] ) : '';
+			$footnotes_options['post_identifier']       = ( array_key_exists( 'post_identifier', $post_array ) ) ? \sanitize_text_field( $post_array['post_identifier'] ) : '';
+			$footnotes_options['list_style_symbol']     = ( array_key_exists( 'list_style_symbol', $post_array ) ) ? \sanitize_text_field( $post_array['list_style_symbol'] ) : '';
 
 			$footnotes_options['pre_footnotes']  = ( array_key_exists( 'pre_footnotes', $post_array ) ) ? \wpautop( $post_array['pre_footnotes'], true ) : '';
 			$footnotes_options['post_footnotes'] = ( array_key_exists( 'post_footnotes', $post_array ) ) ? \wpautop( $post_array['post_footnotes'], true ) : '';
@@ -175,15 +175,15 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 			$footnotes_options['no_editor_header_footer'] = ( array_key_exists( 'no_editor_header_footer', $post_array ) ) ? true : false;
 
 			$footnotes_options['combine_identical_notes'] = ( array_key_exists( 'combine_identical_notes', $post_array ) ) ? true : false;
-			$footnotes_options['priority']                = ( array_key_exists( 'priority', $post_array ) ) ? sanitize_text_field( $post_array['priority'] ) : '';
+			$footnotes_options['priority']                = ( array_key_exists( 'priority', $post_array ) ) ? \sanitize_text_field( $post_array['priority'] ) : '';
 
-			$footnotes_options['footnotes_open']  = ( array_key_exists( 'footnotes_open', $post_array ) ) ? sanitize_text_field( $post_array['footnotes_open'] ) : '';
-			$footnotes_options['footnotes_close'] = ( array_key_exists( 'footnotes_close', $post_array ) ) ? sanitize_text_field( $post_array['footnotes_close'] ) : '';
+			$footnotes_options['footnotes_open']  = ( array_key_exists( 'footnotes_open', $post_array ) ) ? \sanitize_text_field( $post_array['footnotes_open'] ) : '';
+			$footnotes_options['footnotes_close'] = ( array_key_exists( 'footnotes_close', $post_array ) ) ? \sanitize_text_field( $post_array['footnotes_close'] ) : '';
 
 			$footnotes_options['pretty_tooltips'] = ( array_key_exists( 'pretty_tooltips', $post_array ) ) ? true : false;
 
-			$footnotes_options['back_link_title'] = ( array_key_exists( 'back_link_title', $post_array ) ) ? sanitize_text_field( $post_array['back_link_title'] ) : '';
-			$footnotes_options['css_footnotes']   = ( array_key_exists( 'css_footnotes', $post_array ) ) ? _sanitize_text_fields( $post_array['css_footnotes'], true ) : '';
+			$footnotes_options['back_link_title'] = ( array_key_exists( 'back_link_title', $post_array ) ) ? \sanitize_text_field( $post_array['back_link_title'] ) : '';
+			$footnotes_options['css_footnotes']   = ( array_key_exists( 'css_footnotes', $post_array ) ) ? \_sanitize_text_fields( $post_array['css_footnotes'], true ) : '';
 
 			$footnotes_options['no_display_post'] = ( array_key_exists( 'no_display_post', $post_array ) ) ? true : false;
 
@@ -266,7 +266,7 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 					'footnotes_close'          => '))',
 					'pretty_tooltips'          => false,
 					'version'                  => self::OPTIONS_VERSION,
-					'back_link_title'          => __( 'Jump back to text', 'awesome-footnotes' ),
+					'back_link_title'          => \__( 'Jump back to text', 'awesome-footnotes' ),
 					'css_footnotes'            => 'ol.footnotes { color:#666666; }' . "\n" . 'ol.footnotes li { font-size:80%; }',
 					'no_editor_header_footer'  => false,
 					'no_display_post'          => false,
@@ -294,60 +294,60 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 
 			$base .= 'code';
 
-			add_menu_page(
-				esc_html__( 'Awesome Footnotes', 'awesome-footnotes' ),
-				esc_html__( 'Footnotes', 'awesome-footnotes' ),
+			\add_menu_page(
+				\esc_html__( 'Awesome Footnotes', 'awesome-footnotes' ),
+				\esc_html__( 'Footnotes', 'awesome-footnotes' ),
 				'manage_options',
 				self::MENU_SLUG,
 				array( __CLASS__, 'footnotes_options_page' ),
-				'data:image/svg+xml;base64,' . $base( file_get_contents( AWEF_PLUGIN_ROOT . 'assets/icon.svg' ) ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode, WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+				'data:image/svg+xml;base64,' . $base( file_get_contents( \AWEF_PLUGIN_ROOT . 'assets/icon.svg' ) ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode, WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 				30
 			);
 
-			register_setting(
-				AWEF_SETTINGS_NAME,
-				AWEF_SETTINGS_NAME,
+			\register_setting(
+				\AWEF_SETTINGS_NAME,
+				\AWEF_SETTINGS_NAME,
 				array(
 					'\AWEF\Helpers\Settings',
 					'store_options',
 				)
 			);
 
-			add_action( 'load-' . $footnotes_hook, array( __CLASS__, 'footnotes_help' ) );
+			\add_action( 'load-' . $footnotes_hook, array( __CLASS__, 'footnotes_help' ) );
 
 			if ( ! self::is_plugin_settings_page() ) {
 				return;
 			}
 
 			// Reset settings.
-			if ( isset( $_REQUEST['reset-settings'] ) && check_admin_referer( 'reset-plugin-settings', 'reset_nonce' ) ) {
+			if ( isset( $_REQUEST['reset-settings'] ) && \check_admin_referer( 'reset-plugin-settings', 'reset_nonce' ) ) {
 
 				\delete_option( AWEF_SETTINGS_NAME );
 
 				// Redirect to the plugin settings page.
-				wp_safe_redirect(
-					add_query_arg(
+				\wp_safe_redirect(
+					\add_query_arg(
 						array(
 							'page'  => self::MENU_SLUG,
 							'reset' => 'true',
 						),
-						admin_url( 'admin.php' )
+						\admin_url( 'admin.php' )
 					)
 				);
 				exit;
-			} elseif ( isset( $_REQUEST['export-settings'] ) && check_admin_referer( 'export-plugin-settings', 'export_nonce' ) ) { // Export Settings.
+			} elseif ( isset( $_REQUEST['export-settings'] ) && \check_admin_referer( 'export-plugin-settings', 'export_nonce' ) ) { // Export Settings.
 
 				global $wpdb;
 
 				$stored_options = $wpdb->get_results(
-					$wpdb->prepare( 'SELECT option_name, option_value FROM ' . $wpdb->options . ' WHERE option_name = %s', AWEF_SETTINGS_NAME )
+					$wpdb->prepare( 'SELECT option_name, option_value FROM ' . $wpdb->options . ' WHERE option_name = %s', \AWEF_SETTINGS_NAME )
 				);
 
 				header( 'Cache-Control: public, must-revalidate' );
 				header( 'Pragma: hack' );
 				header( 'Content-Type: text/plain' );
 				header( 'Content-Disposition: attachment; filename="' . AWEF_TEXTDOMAIN . '-options-' . gmdate( 'dMy' ) . '.dat"' );
-				echo wp_json_encode( unserialize( $stored_options[0]->option_value ) );
+				echo \wp_json_encode( unserialize( $stored_options[0]->option_value ) );
 				die();
 			} elseif ( isset( $_FILES[ self::SETTINGS_FILE_FIELD ] ) && \check_admin_referer( 'awef-plugin-data', 'awef-security' ) ) { // Import the settings.
 				if ( isset( $_FILES ) &&
@@ -402,8 +402,8 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 		 * @since 2.0.0
 		 */
 		public static function render() {
-			\wp_enqueue_script( 'awef-admin-scripts', AWEF_PLUGIN_ROOT_URL . '/js/admin/awef-settings.js', array( 'jquery', 'jquery-ui-sortable', 'jquery-ui-draggable', 'wp-color-picker', 'jquery-ui-autocomplete' ), AWEF_VERSION, false );
-			\wp_enqueue_style( 'awef-admin-style', AWEF_PLUGIN_ROOT_URL . '/css/admin/style.css', array(), AWEF_VERSION, 'all' );
+			\wp_enqueue_script( 'awef-admin-scripts', \AWEF_PLUGIN_ROOT_URL . '/js/admin/awef-settings.js', array( 'jquery', 'jquery-ui-sortable', 'jquery-ui-draggable', 'wp-color-picker', 'jquery-ui-autocomplete' ), \AWEF_VERSION, false );
+			\wp_enqueue_style( 'awef-admin-style', \AWEF_PLUGIN_ROOT_URL . '/css/admin/style.css', array(), \AWEF_VERSION, 'all' );
 
 			self::awef_show_options();
 		}
@@ -511,7 +511,7 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 		 */
 		public static function awef_show_options() {
 
-			wp_enqueue_media();
+			\wp_enqueue_media();
 
 			$settings_tabs = array(
 
@@ -639,9 +639,9 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 						<div id="awef-options-tab-<?php echo \esc_attr( $tab ); ?>" class="tabs-wrap">
 
 							<?php
-							include_once AWEF_PLUGIN_ROOT . 'classes/settings/settings-options/' . $tab . '.php';
+							include_once \AWEF_PLUGIN_ROOT . 'classes/settings/settings-options/' . $tab . '.php';
 
-							do_action( 'awef_plugin_options_tab_' . $tab );
+							\do_action( 'awef_plugin_options_tab_' . $tab );
 							?>
 
 						</div>
@@ -649,7 +649,7 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 						}
 						?>
 
-						<?php wp_nonce_field( 'awef-plugin-data', 'awef-security' ); ?>
+						<?php \wp_nonce_field( 'awef-plugin-data', 'awef-security' ); ?>
 						<input type="hidden" name="action" value="awef_plugin_data_save" />
 
 						<div class="awef-footer">
@@ -679,43 +679,43 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 
 				'general'       => array(
 					'icon'  => 'admin-generic',
-					'title' => esc_html__( 'General', 'awesome-footnotes' ),
+					'title' => \esc_html__( 'General', 'awesome-footnotes' ),
 				),
 
 				'logo'          => array(
 					'icon'  => 'lightbulb',
-					'title' => esc_html__( 'Logo', 'awesome-footnotes' ),
+					'title' => \esc_html__( 'Logo', 'awesome-footnotes' ),
 				),
 
 				'posts'         => array(
 					'icon'  => 'media-text',
-					'title' => esc_html__( 'Article types', 'awesome-footnotes' ),
+					'title' => \esc_html__( 'Article types', 'awesome-footnotes' ),
 				),
 
 				'footer'        => array(
 					'icon'  => 'editor-insertmore',
-					'title' => esc_html__( 'Footer', 'awesome-footnotes' ),
+					'title' => \esc_html__( 'Footer', 'awesome-footnotes' ),
 				),
 
 				'seo'           => array(
 					'icon'  => 'google',
-					'title' => esc_html__( 'SEO', 'awesome-footnotes' ),
+					'title' => \esc_html__( 'SEO', 'awesome-footnotes' ),
 				),
 
 				'optimization'  => array(
 					'icon'  => 'dashboard',
-					'title' => esc_html__( 'Optimization', 'awesome-footnotes' ),
+					'title' => \esc_html__( 'Optimization', 'awesome-footnotes' ),
 				),
 
 				'miscellaneous' => array(
 					'icon'  => 'shortcode',
-					'title' => esc_html__( 'Miscellaneous', 'awesome-footnotes' ),
+					'title' => \esc_html__( 'Miscellaneous', 'awesome-footnotes' ),
 				),
 			);
 
 			$settings_tabs['backup'] = array(
 				'icon'  => 'migrate',
-				'title' => esc_html__( 'Export/Import', 'awesome-footnotes' ),
+				'title' => \esc_html__( 'Export/Import', 'awesome-footnotes' ),
 			);
 
 			return $settings_tabs;
@@ -741,7 +741,7 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 				$data = self::get_current_options()[ $value['id'] ];
 			}
 
-			Settings_Builder::create( $value, AWEF_SETTINGS_NAME . '[' . $value['id'] . ']', $data );
+			Settings_Builder::create( $value, \AWEF_SETTINGS_NAME . '[' . $value['id'] . ']', $data );
 		}
 
 		/**

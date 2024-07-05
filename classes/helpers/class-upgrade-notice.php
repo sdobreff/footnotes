@@ -45,7 +45,7 @@ if ( ! class_exists( '\AWEF\Helpers\Upgrade_Notice' ) ) {
 			}
 
 			if ( 'plugins' === $current_screen->id ) {
-				\add_action( 'in_plugin_update_message-' . AWEF_PLUGIN_BASENAME, array( __CLASS__, 'prefix_plugin_update_message' ), 10, 2 );
+				\add_action( 'in_plugin_update_message-' . \AWEF_PLUGIN_BASENAME, array( __CLASS__, 'prefix_plugin_update_message' ), 10, 2 );
 			}
 		}
 
@@ -61,7 +61,7 @@ if ( ! class_exists( '\AWEF\Helpers\Upgrade_Notice' ) ) {
 		 */
 		public static function prefix_plugin_update_message( $data, $response ) {
 
-			$current_version_parts = explode( '.', AWEF_VERSION );
+			$current_version_parts = explode( '.', \AWEF_VERSION );
 			$new_version_parts     = explode( '.', $response->new_version );
 
 			// If user has already moved to the minor version, we don't need to flag up anything.
@@ -90,7 +90,7 @@ if ( ! class_exists( '\AWEF\Helpers\Upgrade_Notice' ) ) {
 		 */
 		private static function get_upgrade_notice( $version ) {
 			$transient_name = 'awef_upgrade_notice_' . $version;
-			$upgrade_notice = get_transient( $transient_name );
+			$upgrade_notice = \get_transient( $transient_name );
 
 			if ( false === $upgrade_notice || empty( $upgrade_notice ) ) {
 				$response = \wp_safe_remote_get( 'https://plugins.svn.wordpress.org/awesome-footnotes/trunk/readme.txt' );
