@@ -39,7 +39,7 @@ if ( ! class_exists( '\AWEF\Awesome_Footnotes' ) ) {
 		 * @since 2.0.0
 		 */
 		public static function init() {
-			if ( \is_admin() ) {
+			if ( \is_admin() && ! \wp_doing_ajax() ) {
 				Migration::migrate();
 
 				\add_action( 'admin_init', array( __CLASS__, 'plugin_redirect' ) );
