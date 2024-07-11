@@ -103,9 +103,10 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 			 *
 			 * @since 2.4.1
 			 */
-			$process_hooks = \apply_filters( 'awef_process_content_hooks', array( 'the_content' ) );
+			$process_hooks = \apply_filters( 'awef_process_content_hooks', array( 'the_content', 'get_the_excerpt' ) );
 			array_map(
 				function ( $hook ) {
+
 					\add_action( $hook, array( __CLASS__, 'process' ), Settings::get_current_options()['priority'] );
 				},
 				$process_hooks
@@ -280,7 +281,7 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 		 *
 		 * Adds the identifier links and creates footnotes list
 		 *
-		 * @param string $data - The content of the post.
+		 * @param string|\WP_Post $data - The content of the post. (or the post itself - should not be used that way).
 		 *
 		 * @return string  The new content with footnotes generated
 		 *
@@ -290,22 +291,30 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 
 			global $post, $wp_current_filter;
 
+			$inner_post = $post;
+
 			$shortcode_replace = false;
 
-			// check against post existing before processing.
-			if ( ! $post ) {
+			if ( \is_a( $data, '\WP_Post' ) ) {
+				// That is not in use and should not be used.
+				$inner_post = $data;
+				$data       = &$inner_post->post_content;
+			}
+
+			// Check if post is actually set.
+			if ( ! $inner_post ) {
 				return $data;
 			}
 
 			if ( 0 === self::$current_post ) {
 				// The inner post id cache variable is not initialized. Set it to the current post id and leave.
-				self::$current_post = $post->ID;
-			} elseif ( self::$current_post !== $post->ID ) {
+				self::$current_post = $inner_post->ID;
+			} elseif ( self::$current_post !== $inner_post->ID ) {
 				// The post has changed - we are in loop (probably) null the class variables.
 				self::$pos                = 0;
 				self::$block_starting_pos = -1;
 
-				self::$current_post = $post->ID;
+				self::$current_post = $inner_post->ID;
 			}
 
 			// Check whether we are displaying them or not.
@@ -334,11 +343,17 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 
 			// Check if we have a work to do here.
 			if ( false === \mb_strpos( $data, Settings::get_current_options()['footnotes_open'] ) ) {
+
+				if ( false !== \mb_strpos( $data, self::SHORT_CODE_POSITION_HOLDER ) ) {
+					// Yes.
+					$data = \str_replace( self::SHORT_CODE_POSITION_HOLDER, '', $data );
+				}
+
 				// Nope - bounce.
 				return $data;
 			}
 
-			$identifiers = self::extract_current_notes( $data, $post->ID );
+			$identifiers = self::extract_current_notes( $data, $inner_post->ID );
 
 			$filters = (array) $wp_current_filter;
 
@@ -368,8 +383,8 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 				$data = \str_replace( self::SHORT_CODE_POSITION_HOLDER, '', $data );
 
 				if ( $excerpt_call ) {
-					if ( isset( self::$identifiers[ $post->ID ] ) ) {
-						unset( self::$identifiers[ $post->ID ] );
+					if ( isset( self::$identifiers[ $inner_post->ID ] ) ) {
+						unset( self::$identifiers[ $inner_post->ID ] );
 					}
 				}
 
@@ -382,12 +397,12 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 				$start_number = (int) ( ( 1 === preg_match( '|<!\-\-startnum=(\d+)\-\->|', $data, $start_number_array ) ) ? $start_number_array[1] : 1 );
 			}
 
-			$processed_data = self::get_footnotes( $data, $post->ID );
+			$processed_data = self::get_footnotes( $data, $inner_post->ID );
 
 			$footnotes   = $processed_data['footnotes'];
 			$identifiers = $processed_data['identifiers'];
 
-			$style = self::get_style( $post );
+			$style = self::get_style( $inner_post );
 
 			// Footnotes and identifiers are stored in the array.
 
@@ -403,11 +418,11 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 			// Display identifiers.
 			foreach ( $identifiers as $key => $identifier ) {
 
-				$id_id = self::HTML_TAG_NAME . $key + $start_number . '_' . $post->ID;
+				$id_id = self::HTML_TAG_NAME . $key + $start_number . '_' . $inner_post->ID;
 
 				$id_num_text = ( 'decimal' === $style ) ? $identifier['position_number'] : self::convert_num( $identifier['use_footnote'], $style, $key );
 
-				$id_href    = ( ( $use_full_link ) ? \get_permalink( $post->ID ) : '' ) . '#footnote_' . ( $identifier['use_footnote'] + $start_number ) . '_' . $post->ID;
+				$id_href    = ( ( $use_full_link ) ? \get_permalink( $inner_post->ID ) : '' ) . '#footnote_' . ( $identifier['use_footnote'] + $start_number ) . '_' . $inner_post->ID;
 				$id_title   = str_replace( '"', '&quot;', htmlentities( html_entity_decode( \wp_strip_all_tags( $identifier['text'] ), ENT_QUOTES, 'UTF-8' ), ENT_QUOTES, 'UTF-8' ) );
 				$id_replace = Settings::get_current_options()['pre_identifier'] . '<a href="' . $id_href . '" id="' . $id_id . '" class="footnote-link footnote-identifier-link" title="' . $id_title . '">' . Settings::get_current_options()['inner_pre_identifier'] . $id_num_text . Settings::get_current_options()['inner_post_identifier'] . '</a>' . Settings::get_current_options()['post_identifier'];
 				if ( Settings::get_current_options()['superscript'] ) {
