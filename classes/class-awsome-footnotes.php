@@ -58,6 +58,8 @@ if ( ! class_exists( '\AWEF\Awesome_Footnotes' ) ) {
 
 				// Hide all unrelated to the plugin notices on the plugin admin pages.
 				\add_action( 'admin_print_scripts', array( __CLASS__, 'hide_unrelated_notices' ) );
+			} elseif ( \is_admin() ) {
+				Settings::init();
 			} else {
 				Footnotes_Formatter::init();
 			}
