@@ -118,7 +118,8 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 
 			\add_shortcode( self::SHORTCODE_NAME, array( __CLASS__, 'show_footnotes' ) );
 
-			if ( Settings::get_current_options()['pretty_tooltips'] ) {
+			if ( Settings::get_current_options()['pretty_tooltips']
+			|| Settings::get_current_options()['vanilla_js_tooltips'] ) {
 				\add_action( 'init', array( __CLASS__, 'register_script' ) );
 				\add_action( 'wp_footer', array( __CLASS__, 'print_script' ) );
 			}
@@ -218,34 +219,38 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 		 * @since 2.0.0
 		 */
 		public static function register_script() {
+			if ( Settings::get_current_options()['pretty_tooltips'] ) {
+				\wp_register_script(
+					'wp-footnotes-tooltips',
+					\AWEF_PLUGIN_ROOT_URL . 'js/tooltips.min.js',
+					array(
+						'jquery',
+						'jquery-ui-widget',
+						'jquery-ui-tooltip',
+						'jquery-ui-core',
+						'jquery-ui-position',
+					),
+					\AWEF_VERSION,
+					true
+				);
 
-			\wp_register_script(
-				'wp-footnotes-tooltips',
-				\AWEF_PLUGIN_ROOT_URL . 'js/tooltips.min.js',
-				array(
-					'jquery',
-					'jquery-ui-widget',
-					'jquery-ui-tooltip',
-					'jquery-ui-core',
-					'jquery-ui-position',
-				),
-				\AWEF_VERSION,
-				true
-			);
+				\wp_register_style(
+					'wp-footnotes-tt-style',
+					\AWEF_PLUGIN_ROOT_URL . 'css/tooltips.min.css',
+					array(),
+					\AWEF_VERSION
+				);
+			}
 
-			\wp_register_style(
-				'wp-footnotes-tt-style',
-				\AWEF_PLUGIN_ROOT_URL . 'css/tooltips.min.css',
-				array(),
-				\AWEF_VERSION
-			);
+			if ( Settings::get_current_options()['vanilla_js_tooltips'] ) {
 
-			\wp_register_style(
-				'wp-footnotes-endnotes-style',
-				\AWEF_PLUGIN_ROOT_URL . 'css/endnotes.css',
-				array(),
-				\AWEF_VERSION
-			);
+				\wp_register_style(
+					'wp-footnotes-endnotes-style',
+					\AWEF_PLUGIN_ROOT_URL . 'css/endnotes.css',
+					array(),
+					\AWEF_VERSION
+				);
+			}
 		}
 
 		/**
@@ -256,24 +261,28 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 		 * @since 2.0.0
 		 */
 		public static function print_script() {
-			\wp_print_scripts( 'wp-footnotes-tooltips' );
-			\wp_print_styles( 'wp-footnotes-tt-style' );
+			if ( Settings::get_current_options()['pretty_tooltips'] ) {
+				\wp_print_scripts( 'wp-footnotes-tooltips' );
+				\wp_print_styles( 'wp-footnotes-tt-style' );
+			}
 
-			// echo '
-			// <script type="module">
-			// import footnotes from "' . \AWEF_PLUGIN_ROOT_URL . 'js/endnotes.js?' . \rand() . '"
-			// let opt = {
-			// before_hook: anchor => {
-			// document.querySelector(\'h1\').style.color = \'red\'
-			// },
-			// after_hook: anchor => {
-			// document.querySelector(\'h1\').style.color = \'initial\'
-			// }
-			// }
-			// footnotes(\'a.footnote-identifier-link\', opt)
-			// </script>';
+			if ( Settings::get_current_options()['vanilla_js_tooltips'] ) {
+				echo '
+				<script type="module">
+				import footnotes from "' . \AWEF_PLUGIN_ROOT_URL . 'js/endnotes.js?' . \rand() . '"
+				let opt = {
+				// before_hook: anchor => {
+				// document.querySelector(\'h1\').style.color = \'red\'
+				// },
+				// after_hook: anchor => {
+				// document.querySelector(\'h1\').style.color = \'initial\'
+				// }
+				}
+				footnotes(\'a.footnote-identifier-link\', opt)
+				</script>';
 
-			// \wp_print_styles( 'wp-footnotes-endnotes-style' );
+				\wp_print_styles( 'wp-footnotes-endnotes-style' );
+			}
 		}
 
 		/**
@@ -586,8 +595,23 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 				}
 			}
 
+			global $footnotes_markup, $footnotes_block, $footnotes_header, $footnotes_footer, $start;
+
 			$footnotes_markup = '';
-			$start            = ( 1 !== $start_number ) ? 'start="' . $start_number . '" ' : 'start="' . ( \array_key_first( $footnotes ) + 1 ) . '"';
+			$footnotes_block  = '';
+			$footnotes_header = '';
+			$footnotes_footer = '';
+
+			/**
+			 * Gives the ability to change the footnotes header to something else
+			 *
+			 * @param string - The parsed footnotes header.
+			 *
+			 * @since 3.7.0
+			 */
+			$footnotes_markup = \apply_filters( 'awef_before_footnotes_markup', $footnotes_markup );
+
+			$start = ( 1 !== $start_number ) ? 'start="' . $start_number . '" ' : 'start="' . ( \array_key_first( $footnotes ) + 1 ) . '"';
 
 			if ( ! empty( $footnotes_header = Settings::get_current_options()['pre_footnotes'] ) ) { // phpcs:ignore Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure
 				$footnotes_header =
@@ -603,14 +627,14 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 			 *
 			 * @since 2.4.0
 			 */
-			$footnotes_markup .= \apply_filters( 'awef_footnotes_header', $footnotes_header );
+			$footnotes_header = \apply_filters( 'awef_footnotes_header', $footnotes_header );
 
-			$footnotes_markup .= '<ol ' . $start . 'class="footnotes">';
+			// $footnotes_markup .= '<ol ' . $start . 'class="footnotes">';
 			foreach ( $footnotes as $key => $value ) {
 
 				$foot_links = '';
 
-				if ( ! is_feed() ) {
+				if ( ! \is_feed() ) {
 
 					$back_link_title = Settings::get_current_options()['back_link_title'];
 					$foot_links     .= '<span class="footnote-back-link-wrapper">';
@@ -638,23 +662,23 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 
 				$before_position = Settings::get_current_options()['position_before_footnote'];
 
-				$footnotes_markup .= '<li id="footnote_' . ( $key + $start_number ) . '_' . $post->ID . '" class="footnote"';
+				$footnotes_block .= '<li id="footnote_' . ( $key + $start_number ) . '_' . $post->ID . '" class="footnote"';
 				if ( Settings::get_current_options()['list_style_type'] !== $style ) {
-					$footnotes_markup = $footnotes_markup . ' style="list-style-type:' . $style . ';"';
+					$footnotes_block .= ' style="list-style-type:' . $style . ';"';
 				}
-				$footnotes_markup = $footnotes_markup . '>';
+				$footnotes_block .= '>';
 				if ( 'symbol' === $style ) {
-					$footnotes_markup = $footnotes_markup . '<span class="symbol">' . self::convert_num( $key + $start_number, $style, $key ) . '</span> ';
+					$footnotes_block .= '<span class="symbol">' . self::convert_num( $key + $start_number, $style, $key ) . '</span> ';
 				}
-				$footnotes_markup .= ( ( $before_position ) ? $foot_links : '' );
+				$footnotes_block .= ( ( $before_position ) ? $foot_links : '' );
 
-				$footnotes_markup .= $value['text'];
+				$footnotes_block .= $value['text'];
 
-				$footnotes_markup .= ( ( ! $before_position ) ? $foot_links : '' );
+				$footnotes_block .= ( ( ! $before_position ) ? $foot_links : '' );
 
-				$footnotes_markup .= '</li>';
+				$footnotes_block .= '</li>';
 			}
-			$footnotes_markup .= '</ol>';
+			// $footnotes_markup .= '</ol>';
 
 			if ( ! empty( $footnotes_footer = Settings::get_current_options()['post_footnotes'] ) ) { // phpcs:ignore Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure, Generic.CodeAnalysis.AssignmentInCondition.Found
 				$footnotes_footer =
@@ -670,9 +694,43 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 			 *
 			 * @since 2.4.0
 			 */
-			$footnotes_markup .= \apply_filters( 'awef_footnotes_footer', $footnotes_footer );
+			$footnotes_footer = \apply_filters( 'awef_footnotes_footer', $footnotes_footer );
+
+			\ob_start();
+			self::get_template( '', 'footnotes' );
+
+			$footnotes_markup .= \ob_get_contents();
+			
+			\ob_end_clean();
+
+			/**
+			 * Gives the ability to change the footnotes header to something else
+			 *
+			 * @param string - The parsed footnotes header.
+			 *
+			 * @since 3.7.0
+			 */
+			$footnotes_markup = \apply_filters( 'awef_after_footnotes_markup', $footnotes_markup );
 
 			return $footnotes_markup;
+		}
+
+		public static function get_template( $subfolder, $file ) {
+			$real_file = $file . '.php';
+
+			// Look for a file in theme.
+			if ( $theme_template = \locate_template( AWEF_TEXTDOMAIN . \DIRECTORY_SEPARATOR . $subfolder . \DIRECTORY_SEPARATOR . $real_file ) ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.Found, Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure
+
+				require_once $theme_template;
+
+			} else {
+
+				// Nothing found, let's look in our plugin.
+				$plugin_template = AWEF_TEMPLATE_DIR . $subfolder . \DIRECTORY_SEPARATOR . $real_file;
+				if ( \file_exists( $plugin_template ) ) {
+					require_once $plugin_template;
+				}
+			}
 		}
 
 		/**
@@ -686,8 +744,8 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 		 */
 		public static function get_style( \WP_Post $post = null ) {
 			// Check if this post is using a different list style to the settings.
-			if ( get_post_meta( $post->ID, 'footnote_style', true ) && array_key_exists( get_post_meta( $post->ID, 'footnote_style', true ), self::$styles ) ) {
-				$style = get_post_meta( $post->ID, 'footnote_style', true );
+			if ( \get_post_meta( $post->ID, 'footnote_style', true ) && array_key_exists( \get_post_meta( $post->ID, 'footnote_style', true ), self::$styles ) ) {
+				$style = \get_post_meta( $post->ID, 'footnote_style', true );
 			} else {
 				$style = Settings::get_current_options()['list_style_type'];
 			}

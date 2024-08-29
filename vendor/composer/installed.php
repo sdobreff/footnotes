@@ -3,7 +3,7 @@
         'name' => 'footnotes/awesome-footnotes',
         'pretty_version' => '2.0.0',
         'version' => '2.0.0.0',
-        'reference' => NULL,
+        'reference' => null,
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'footnotes/awesome-footnotes' => array(
             'pretty_version' => '2.0.0',
             'version' => '2.0.0.0',
-            'reference' => NULL,
+            'reference' => null,
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
