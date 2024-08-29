@@ -87,48 +87,9 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 			\add_action( 'admin_menu', array( __CLASS__, 'add_options_page' ) ); // Insert the Admin panel.
 
 			/**
-			 * Save Options
-			 */
-			\add_action( 'wp_ajax_awef_plugin_data_save', array( __CLASS__, 'save_settings_ajax' ) );
-
-			/**
 			 * Draws the save button in the settings
 			 */
 			\add_action( 'awef_settings_save_button', array( __CLASS__, 'save_button' ) );
-		}
-
-		/**
-		 * Method responsible for AJAX data saving
-		 *
-		 * @return void
-		 *
-		 * @since 2.0.0
-		 */
-		public static function save_settings_ajax() {
-
-			if ( \check_ajax_referer( 'awef-plugin-data', 'awef-security' ) ) {
-
-				if ( isset( $_POST[ \AWEF_SETTINGS_NAME ] ) && ! empty( $_POST[ \AWEF_SETTINGS_NAME ] ) && \is_array( $_POST[ \AWEF_SETTINGS_NAME ] ) ) {
-
-					$data = array_map( 'sanitize_text_field', \stripslashes_deep( $_POST[ \AWEF_SETTINGS_NAME ] ) );
-
-					if ( isset( $_POST[ \AWEF_SETTINGS_NAME ]['css_footnotes'] ) ) {
-						$data['css_footnotes'] = \_sanitize_text_fields( \wp_unslash( $_POST[ \AWEF_SETTINGS_NAME ]['css_footnotes'] ), true ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-					}
-
-					if ( isset( $_POST[ \AWEF_SETTINGS_NAME ]['pre_footnotes'] ) ) {
-						$data['pre_footnotes'] = \wpautop( \wp_unslash( $_POST[ \AWEF_SETTINGS_NAME ]['pre_footnotes'] ), true ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-					}
-
-					if ( isset( $_POST[ \AWEF_SETTINGS_NAME ]['post_footnotes'] ) ) {
-						$data['post_footnotes'] = \wpautop( \wp_unslash( $_POST[ \AWEF_SETTINGS_NAME ]['post_footnotes'] ), true ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-					}
-					\update_option( AWEF_SETTINGS_NAME, self::store_options( $data ) );
-
-					\wp_send_json_success( 2 );
-				}
-				\wp_die();
-			}
 		}
 
 		/**
@@ -181,6 +142,8 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 			$footnotes_options['footnotes_close'] = ( array_key_exists( 'footnotes_close', $post_array ) ) ? \sanitize_text_field( $post_array['footnotes_close'] ) : '';
 
 			$footnotes_options['pretty_tooltips'] = ( array_key_exists( 'pretty_tooltips', $post_array ) ) ? true : false;
+
+			$footnotes_options['vanilla_js_tooltips'] = ( array_key_exists( 'vanilla_js_tooltips', $post_array ) ) ? true : false;
 
 			$footnotes_options['back_link_title'] = ( array_key_exists( 'back_link_title', $post_array ) ) ? \sanitize_text_field( $post_array['back_link_title'] ) : '';
 			$footnotes_options['css_footnotes']   = ( array_key_exists( 'css_footnotes', $post_array ) ) ? \_sanitize_text_fields( $post_array['css_footnotes'], true ) : '';
@@ -265,6 +228,7 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 					'footnotes_open'           => '((',
 					'footnotes_close'          => '))',
 					'pretty_tooltips'          => false,
+					'vanilla_js_tooltips'      => false,
 					'version'                  => self::OPTIONS_VERSION,
 					'back_link_title'          => \__( 'Jump back to text', 'awesome-footnotes' ),
 					'css_footnotes'            => 'ol.footnotes { color:#666666; }' . "\n" . 'ol.footnotes li { font-size:80%; }',

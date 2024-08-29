@@ -1,9 +1,9 @@
 === WordPress Footnotes ===
 Tags: footnotes, formatting, notes, reference
 Requires at least: 6.0
-Tested up to: 6.6.0
+Tested up to: 6.6.1
 Requires PHP: 7.4
-Stable tag: 3.6.0
+Stable tag: 3.7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,6 +23,7 @@ You can visit the [Github page](https://github.com/sdobreff/footnotes/ "Github")
 * Paginated posts are supported
 * Suppress **Footnotes** on specific page types
 * Option to display ‘pretty’ tooltips using jQuery
+* Option to display footnotes as tooltips using vanilla JS
 * Lots of configuration options
 
 **WordPress Footnotes** plugin is designed to ease the creation of a new footnote. It also gives you the ability to easily switch from most of the existing **footnotes** plugins to this one. Lets face it - almost 100% of them are abandoned or in awful condition. It supports PHP8, it is written using best practices and follows the WordPress standards, give it a try. You can quickly check the plugin [here](https://playground.wordpress.net/?plugin=awesome-footnotes&networking=yes "WP Playground")
@@ -53,7 +54,7 @@ Note: If you choose this way (above), you have to go to the plugin settings, and
 
 **Advanced Custom Fields (ACF)** are also supported out of the box - just read and keep in mind this:
 
-Unfortunately there are limitations with the **ACF** because of its block structure. There is no way to guess how many blocks are there, which is first, second, are there more blocks or not … So every block will show its own footnotes, and shortcodes are not working outside them. Currently there is no way to achieve that functionality.
+Unfortunately there are limitations with the **ACF** because of its block structure. There is no way to guess how many blocks are there, which is first, second, are there more blocks or not … So every block will show its own footnotes, and shortcodes are not working outside them. Currently there is no way to achieve that functionality. So they are treated more like endnotes if there are multiple blocks using the footnotes tags.
 
 What plugin does is to keep track of the footnotes and keep proper numbering among the blocks (again there is no way to guess which is which, so they are parsed in order of their callings from backend, but they can be shown in entirely different places on the front end.)
 
@@ -131,6 +132,9 @@ Yes. You can use the Awesome Footnotes button in the toolbar of the Block Editor
 4. Plugin in standard editor
 
 == Change Log ==
+= 3.7.0 =
+New AJAX class is introduced for speeding the plugin work. Now separate template file is used to show the footnotes, it can be overwritten from withing the theme. New vanilla JS to show the footnotes is introduced - no external libraries dependencies.
+
 = 3.6.0 =
 Fixed bug when trying to save settings and end up with infinity loop. Thanks to [@electrolund](https://wordpress.org/support/users/electrolund/)
 

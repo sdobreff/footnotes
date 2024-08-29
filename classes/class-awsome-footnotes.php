@@ -20,6 +20,7 @@ use AWEF\Helpers\Review_Plugin;
 use AWEF\Controllers\Integrations;
 use AWEF\Controllers\Footnotes_Formatter;
 use AWEF\Controllers\Pointers;
+use AWEF\Helpers\Ajax;
 use AWEF\Helpers\Context_Helper;
 
 if ( ! class_exists( '\AWEF\Awesome_Footnotes' ) ) {
@@ -58,11 +59,11 @@ if ( ! class_exists( '\AWEF\Awesome_Footnotes' ) ) {
 
 				// Hide all unrelated to the plugin notices on the plugin admin pages.
 				\add_action( 'admin_print_scripts', array( __CLASS__, 'hide_unrelated_notices' ) );
-			} elseif ( \is_admin() ) {
-				Settings::init();
 			} else {
 				Footnotes_Formatter::init();
 			}
+
+			Ajax::init();
 		}
 
 		/**
@@ -185,7 +186,7 @@ if ( ! class_exists( '\AWEF\Awesome_Footnotes' ) ) {
 				<?php
 				printf(
 					/* Translators: Plugin link. */
-					esc_html__( 'Proudly powered by %s', 'awesome-footnotes' ),
+					\esc_html__( 'Proudly powered by %s', 'awesome-footnotes' ),
 					'<a href="' . esc_url( __( 'https://wordpress.org/plugins/awesome-footnotes/', 'awesome-footnotes' ) ) . '" rel="nofollow">' . \esc_attr( AWEF_NAME ) . '</a>'
 				);
 				?>

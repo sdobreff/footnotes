@@ -25,6 +25,7 @@ class ComposerStaticInitcfdb79b3161cca532bdaefc1d0b65af6
         'AWEF\\Controllers\\Footnotes_Formatter' => __DIR__ . '/../..' . '/classes/controllers/class-footnotes-formatter.php',
         'AWEF\\Controllers\\Integrations' => __DIR__ . '/../..' . '/classes/controllers/class-integrations.php',
         'AWEF\\Controllers\\Pointers' => __DIR__ . '/../..' . '/classes/controllers/class-pointers.php',
+        'AWEF\\Helpers\\Ajax' => __DIR__ . '/../..' . '/classes/helpers/class-ajax.php',
         'AWEF\\Helpers\\Context_Helper' => __DIR__ . '/../..' . '/classes/helpers/class-context-helper.php',
         'AWEF\\Helpers\\Review_Plugin' => __DIR__ . '/../..' . '/classes/helpers/class-review-plugin.php',
         'AWEF\\Helpers\\Settings' => __DIR__ . '/../..' . '/classes/helpers/class-settings.php',

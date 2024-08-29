@@ -15,26 +15,26 @@ let id = {
     get content() { return this.wrapper + '_content' }
 }
 
+let currentTarget = null;
+
 export default function(css_selector, options) {
     Object.assign(opt, options)
     document.querySelectorAll(css_selector).forEach( node => {
        // node.addEventListener('mouseover', is_mobile() ? dialog_create : debounce(dialog_create))
-        node.addEventListener('mouseover', dialog_create)
+        node.addEventListener('mouseover', dialog_create);
        // node.addEventListener('mouseout', dialog_remove)
-        node.addEventListener('click', e => e.preventDefault())
+        node.addEventListener('click', dialog_create);
+        node.removeAttribute("title");
     })
 }
 
 function dialog_create(event) {
+    event.preventDefault();
     // don't show the dialog if a user just quickly moved a mouse
     // cursor over a link
-    if (!event.target.matches(':hover')) return
+    //if (!event.target.matches(':hover')) return
 
-    // console.log(event.currentTarget.getBoundingClientRect())
-    // console.log(event.currentTarget.getBoundingClientRect()['left'] + event.currentTarget.offsetWidth/2)
-    // console.log(event.x)
-
-    dialog_remove2(event)
+    dialog_remove(event)
 
     let width = opt.width()
     let padding = 16
@@ -48,6 +48,8 @@ function dialog_create(event) {
     let y = event.currentTarget.getBoundingClientRect()['bottom']
 
     let correction = 0;
+
+    event.currentTarget.style.color = 'red';
 
     // this div is transparent
     let wrapper = document.createElement('div')
@@ -93,20 +95,40 @@ function dialog_create(event) {
         correction = x - (window.innerWidth - width_total);
         wrapper.style.left = (window.innerWidth - width_total) + 'px'
     }
+
+    dlg.innerHTML = opt.ref(this.href);
+
     if (window.innerHeight - y < height_total) {
         // first, try position the popup above the link
-        wrapper.style.top = (y - height_total) + 'px'
+        wrapper.style.top = (y - height_total - 30) + 'px'
         // second, if there is no space above, stick it to the bottom
-        if (y - height_total < 0)
-            wrapper.style.top = (window.innerHeight - height_total) + 'px'
-    }
+        if (y - height_total < 0) {
+            wrapper.style.top = (window.innerHeight - height_total - 30) + 'px;'
+        }
 
-    dlg.innerHTML = opt.ref(this.href)
-    dlg.innerHTML += '<style>#'+id.wrapper+':before {' +
+        dlg.innerHTML += '<style>#'+id.wrapper+':after {' +
+        'content: "";' +
+        'position: absolute;' +
+        'bottom: 1px;' +
+        'right: '+(width/2 - correction + 30)+'px;' + // 30 is the with of the arrow *1.5
+        'width: 20px;' +
+        'height: 20px;' +
+        'background-color: #fffaf0;' +
+        'box-shadow: 0 0 10px #ccc;' +
+        'transform: translate(50%, 50%) rotate(-225deg);' +
+        'clip-path: polygon(' +
+          'calc(10px * -1) calc(10px * -1), ' +
+          'calc(100% + 10px) calc(10px * -1), ' +
+          'calc(100% + 10px) calc(100% + 10px)' +
+        ');' +
+      '}</style>';
+
+    } else {
+        dlg.innerHTML += '<style>#'+id.wrapper+':after {' +
         'content: "";' +
         'position: absolute;' +
         'top: 1px;' +
-        'right: '+(width/2 - correction)+'px;' +
+        'right: '+(width/2 - correction + 30)+'px;' + // 30 is the with of the arrow *1.5
         'width: 20px;' +
         'height: 20px;' +
         'background-color: #fffaf0;' +
@@ -119,19 +141,43 @@ function dialog_create(event) {
         ');' +
       '}</style>';
 
-   wrapper.addEventListener('mouseout', dialog_remove2)
+    }
+    
+    // wrapper.addEventListener('mouseout', dialog_remove2)
 
     if (opt.before_hook) opt.before_hook(event.target)
     document.querySelector('body').appendChild(wrapper)
     document.addEventListener('scroll', dialog_remove2)
+
+    currentTarget = event.currentTarget;
+
+    document.addEventListener('click', event => {
+        // const isClickInside = document.contains(event.target)
+      
+        let dlg = document.querySelector('#' + id.content);
+        if ( !dlg ) return
+
+        // alert(currentTarget.id);
+        // console.log(event)
+        //document.querySelectorAll('#' + id.wrapper).forEach( div => {
+            if (dlg === event?.originalTarget || currentTarget === event?.originalTarget || currentTarget === event?.target || dlg === event?.target ) {
+                event.preventDefault();
+                return
+            } else {
+                dialog_remove2(event);
+            }
+        //})
+    })
 }
 
 function dialog_remove(event) {
+
     let dlg = document.querySelector('#' + id.wrapper)
     if (!dlg || dlg.matches(':hover')) return
 
     document.querySelectorAll('#' + id.wrapper).forEach( div => {
         if (dlg === event?.relatedTarget) return
+        event.currentTarget.style.color = 'initial';
         div.remove()
     })
     if (opt.after_hook) opt.after_hook(event.target)
@@ -148,11 +194,14 @@ function dialog_remove2(event) {
             div.classList.add('animate');
             addEventListener("transitionend", (event) => {
                 div.remove();
-                removed = true
+                removed = true;
+                currentTarget.style.color = 'initial';
             });
         }
     })
-    if (removed && opt.after_hook) opt.after_hook(event.target)
+    if (removed && opt.after_hook) {
+        opt.after_hook(event.target)
+    }
 }
 
 function debounce(fn, ms = 250) {
