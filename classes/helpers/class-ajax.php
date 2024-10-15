@@ -70,7 +70,7 @@ if ( ! class_exists( '\AWEF\Helpers\Ajax' ) ) {
 					if ( isset( $_POST[ \AWEF_SETTINGS_NAME ]['post_footnotes'] ) ) {
 						$data['post_footnotes'] = \wpautop( \wp_unslash( $_POST[ \AWEF_SETTINGS_NAME ]['post_footnotes'] ), true ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 					}
-					\update_option( AWEF_SETTINGS_NAME, Settings::store_options( $data ) );
+					\update_option( AWEF_SETTINGS_NAME, Settings::collect_and_sanitize_options( $data ) );
 
 					\wp_send_json_success( 2 );
 				}

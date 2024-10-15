@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace AWEF\Helpers;
 
+use AWEF\Controllers\Post_Settings;
 use AWEF\Settings\Settings_Builder;
 
 // Exit if accessed directly.
@@ -28,7 +29,7 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 	 */
 	class Settings {
 
-		public const OPTIONS_VERSION = '11'; // Incremented when the options array changes.
+		public const OPTIONS_VERSION = '12'; // Incremented when the options array changes.
 
 		public const MENU_SLUG = 'awef_settings';
 
@@ -48,6 +49,15 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 		 * @since 2.0.0
 		 */
 		private static $current_options = array();
+
+		/**
+		 * Array with the global options
+		 *
+		 * @var array
+		 *
+		 * @since 3.8.0
+		 */
+		private static $global_options = array();
 
 		/**
 		 * Array with the default options
@@ -73,6 +83,15 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 		private static $current_version = '';
 
 		/**
+		 * Global post variable - keeps track of current post. Used to null to position if current post changes. Used when in loops.
+		 *
+		 * @var integer
+		 *
+		 * @since 3.8.0
+		 */
+		public static $current_post = 0;
+
+		/**
 		 * Inits the class.
 		 *
 		 * @return void
@@ -81,7 +100,7 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 		 */
 		public static function init() {
 
-			self::get_current_options();
+			// self::get_current_options();
 
 			// Hook me up.
 			\add_action( 'admin_menu', array( __CLASS__, 'add_options_page' ) ); // Insert the Admin panel.
@@ -90,6 +109,8 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 			 * Draws the save button in the settings
 			 */
 			\add_action( 'awef_settings_save_button', array( __CLASS__, 'save_button' ) );
+
+			Post_Settings::init();
 		}
 
 		/**
@@ -101,14 +122,14 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 		 *
 		 * @since 2.0.0
 		 */
-		public static function store_options( array $post_array ): array {
+		public static function collect_and_sanitize_options( array $post_array ): array {
 			if ( ! \current_user_can( 'manage_options' ) ) {
 				\wp_die( \esc_html__( 'You do not have sufficient permissions to access this page.', 'awesome-footnotes' ) );
 			}
 
 			$footnotes_options = array();
 
-			$footnotes_options['superscript'] = ( array_key_exists( 'superscript', $post_array ) ) ? true : false;
+			$footnotes_options['superscript'] = ( array_key_exists( 'superscript', $post_array ) ) ? filter_var( $post_array['superscript'], FILTER_VALIDATE_BOOLEAN ) : false;
 
 			$footnotes_options['pre_backlink']  = ( array_key_exists( 'pre_backlink', $post_array ) ) ? sanitize_text_field( $post_array['pre_backlink'] ) : '';
 			$footnotes_options['backlink']      = ( array_key_exists( 'backlink', $post_array ) ) ? sanitize_text_field( $post_array['backlink'] ) : '';
@@ -121,34 +142,39 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 			$footnotes_options['post_identifier']       = ( array_key_exists( 'post_identifier', $post_array ) ) ? \sanitize_text_field( $post_array['post_identifier'] ) : '';
 			$footnotes_options['list_style_symbol']     = ( array_key_exists( 'list_style_symbol', $post_array ) ) ? \sanitize_text_field( $post_array['list_style_symbol'] ) : '';
 
-			$footnotes_options['pre_footnotes']  = ( array_key_exists( 'pre_footnotes', $post_array ) ) ? \wpautop( $post_array['pre_footnotes'], true ) : '';
+			$footnotes_options['pre_footnotes'] = ( array_key_exists( 'pre_footnotes', $post_array ) ) ? \wpautop( $post_array['pre_footnotes'], true ) : '';
+
 			$footnotes_options['post_footnotes'] = ( array_key_exists( 'post_footnotes', $post_array ) ) ? \wpautop( $post_array['post_footnotes'], true ) : '';
 
-			$footnotes_options['position_before_footnote'] = ( array_key_exists( 'position_before_footnote', $post_array ) ) ? true : false;
-			$footnotes_options['no_display_home']          = ( array_key_exists( 'no_display_home', $post_array ) ) ? true : false;
-			$footnotes_options['no_display_preview']       = ( array_key_exists( 'no_display_preview', $post_array ) ) ? true : false;
-			$footnotes_options['no_display_archive']       = ( array_key_exists( 'no_display_archive', $post_array ) ) ? true : false;
-			$footnotes_options['no_display_date']          = ( array_key_exists( 'no_display_date', $post_array ) ) ? true : false;
-			$footnotes_options['no_display_category']      = ( array_key_exists( 'no_display_category', $post_array ) ) ? true : false;
-			$footnotes_options['no_display_search']        = ( array_key_exists( 'no_display_search', $post_array ) ) ? true : false;
-			$footnotes_options['no_display_feed']          = ( array_key_exists( 'no_display_feed', $post_array ) ) ? true : false;
+			$footnotes_options['position_before_footnote'] = ( array_key_exists( 'position_before_footnote', $post_array ) ) ? filter_var( $post_array['position_before_footnote'], FILTER_VALIDATE_BOOLEAN ) : false;
+			$footnotes_options['no_display_home']          = ( array_key_exists( 'no_display_home', $post_array ) ) ? filter_var( $post_array['no_display_home'], FILTER_VALIDATE_BOOLEAN ) : false;
+			$footnotes_options['no_display_preview']       = ( array_key_exists( 'no_display_preview', $post_array ) ) ? filter_var( $post_array['no_display_preview'], FILTER_VALIDATE_BOOLEAN ) : false;
+			$footnotes_options['no_display_archive']       = ( array_key_exists( 'no_display_archive', $post_array ) ) ? filter_var( $post_array['no_display_archive'], FILTER_VALIDATE_BOOLEAN ) : false;
+			$footnotes_options['no_display_date']          = ( array_key_exists( 'no_display_date', $post_array ) ) ? filter_var( $post_array['no_display_date'], FILTER_VALIDATE_BOOLEAN ) : false;
+			$footnotes_options['no_display_category']      = ( array_key_exists( 'no_display_category', $post_array ) ) ? filter_var( $post_array['no_display_category'], FILTER_VALIDATE_BOOLEAN ) : false;
+			$footnotes_options['no_display_search']        = ( array_key_exists( 'no_display_search', $post_array ) ) ? filter_var( $post_array['no_display_search'], FILTER_VALIDATE_BOOLEAN ) : false;
+			$footnotes_options['no_display_feed']          = ( array_key_exists( 'no_display_feed', $post_array ) ) ? filter_var( $post_array['no_display_feed'], FILTER_VALIDATE_BOOLEAN ) : false;
 
-			$footnotes_options['no_editor_header_footer'] = ( array_key_exists( 'no_editor_header_footer', $post_array ) ) ? true : false;
+			$footnotes_options['no_editor_header_footer'] = ( array_key_exists( 'no_editor_header_footer', $post_array ) ) ? filter_var( $post_array['no_editor_header_footer'], FILTER_VALIDATE_BOOLEAN ) : false;
 
-			$footnotes_options['combine_identical_notes'] = ( array_key_exists( 'combine_identical_notes', $post_array ) ) ? true : false;
-			$footnotes_options['priority']                = ( array_key_exists( 'priority', $post_array ) ) ? \sanitize_text_field( $post_array['priority'] ) : '';
+			$footnotes_options['combine_identical_notes'] = ( array_key_exists( 'combine_identical_notes', $post_array ) ) ? filter_var( $post_array['combine_identical_notes'], FILTER_VALIDATE_BOOLEAN ) : false;
+			$footnotes_options['priority']                = ( array_key_exists( 'priority', $post_array ) ) ? \sanitize_text_field( $post_array['priority'] ) : self::get_default_options()['priority'];
 
-			$footnotes_options['footnotes_open']  = ( array_key_exists( 'footnotes_open', $post_array ) ) ? \sanitize_text_field( $post_array['footnotes_open'] ) : '';
-			$footnotes_options['footnotes_close'] = ( array_key_exists( 'footnotes_close', $post_array ) ) ? \sanitize_text_field( $post_array['footnotes_close'] ) : '';
+			$footnotes_options['footnotes_open']  = ( array_key_exists( 'footnotes_open', $post_array ) ) ? \sanitize_text_field( $post_array['footnotes_open'] ) : self::get_default_options()['footnotes_open']; // That one can not be without a value.
+			$footnotes_options['footnotes_close'] = ( array_key_exists( 'footnotes_close', $post_array ) ) ? \sanitize_text_field( $post_array['footnotes_close'] ) : self::get_default_options()['footnotes_close']; // That one can not be without a value.
 
-			$footnotes_options['pretty_tooltips'] = ( array_key_exists( 'pretty_tooltips', $post_array ) ) ? true : false;
+			$footnotes_options['pretty_tooltips'] = ( array_key_exists( 'pretty_tooltips', $post_array ) ) ? filter_var( $post_array['pretty_tooltips'], FILTER_VALIDATE_BOOLEAN ) : false;
 
-			$footnotes_options['vanilla_js_tooltips'] = ( array_key_exists( 'vanilla_js_tooltips', $post_array ) ) ? true : false;
+			$footnotes_options['vanilla_js_tooltips'] = ( array_key_exists( 'vanilla_js_tooltips', $post_array ) ) ? filter_var( $post_array['vanilla_js_tooltips'], FILTER_VALIDATE_BOOLEAN ) : false;
 
 			$footnotes_options['back_link_title'] = ( array_key_exists( 'back_link_title', $post_array ) ) ? \sanitize_text_field( $post_array['back_link_title'] ) : '';
 			$footnotes_options['css_footnotes']   = ( array_key_exists( 'css_footnotes', $post_array ) ) ? \_sanitize_text_fields( $post_array['css_footnotes'], true ) : '';
 
-			$footnotes_options['no_display_post'] = ( array_key_exists( 'no_display_post', $post_array ) ) ? true : false;
+			$footnotes_options['no_display_post'] = ( array_key_exists( 'no_display_post', $post_array ) ) ? filter_var( $post_array['no_display_post'], FILTER_VALIDATE_BOOLEAN ) : false;
+
+			$footnotes_options['version'] = self::OPTIONS_VERSION;
+
+			$footnotes_options['no_posts_footnotes'] = ( array_key_exists( 'no_posts_footnotes', $post_array ) ) ? filter_var( $post_array['no_posts_footnotes'], FILTER_VALIDATE_BOOLEAN ) : false;
 
 			// add_settings_error(AWEF_SETTINGS_NAME, '<field_name>', 'Please enter a valid email!', $type = 'error'); .
 
@@ -160,14 +186,52 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 		}
 
 		/**
+		 * Returns the global options.
+		 *
+		 * @return array
+		 *
+		 * @since 3.8.0
+		 */
+		public static function get_global_options(): array {
+			if ( empty( self::$global_options ) ) {
+
+				// Get the current settings or setup some defaults if needed.
+				self::$global_options = \get_option( AWEF_SETTINGS_NAME );
+				if ( ! self::$global_options ) {
+
+					self::$global_options = self::get_default_options();
+					\update_option( AWEF_SETTINGS_NAME, self::$global_options );
+				} elseif ( ! isset( self::$global_options['version'] ) || self::OPTIONS_VERSION !== self::$global_options['version'] ) {
+
+					// Set any unset options.
+					foreach ( self::get_default_options() as $key => $value ) {
+						if ( ! isset( self::$global_options[ $key ] ) ) {
+							self::$global_options[ $key ] = $value;
+						}
+					}
+
+					\update_option( AWEF_SETTINGS_NAME, self::$global_options );
+				}
+
+				self::$global_options['footnotes_open']  = ( array_key_exists( 'footnotes_open', self::$global_options ) && ! empty( self::$global_options['footnotes_open'] ) ) ? self::$global_options['footnotes_open'] : self::get_default_options()['footnotes_open']; // That one can not be without a value.
+				self::$global_options['footnotes_close'] = ( array_key_exists( 'footnotes_close', self::$global_options ) && ! empty( self::$global_options['footnotes_close'] ) ) ? self::$global_options['footnotes_close'] : self::get_default_options()['footnotes_close']; // That one can not be without a value.
+			}
+
+			return self::$global_options;
+		}
+
+		/**
 		 * Returns the current options.
 		 * Fills the current options array with values if empty.
+		 *
+		 * @param \WP_Post $post - The post object to extract settings from.
 		 *
 		 * @return array
 		 *
 		 * @since 2.0.0
+		 * @since 3.8.0 - The WP_Post option is added in order to override the the settings (if needed) with the once stored in the current post object (if passed.)
 		 */
-		public static function get_current_options(): array {
+		public static function get_current_options( \WP_Post $post = null ): array {
 			if ( empty( self::$current_options ) ) {
 
 				// Get the current settings or setup some defaults if needed.
@@ -184,8 +248,55 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 							self::$current_options[ $key ] = $value;
 						}
 					}
-					self::$current_options['version'] = self::OPTIONS_VERSION;
+
 					\update_option( AWEF_SETTINGS_NAME, self::$current_options );
+				}
+
+				if ( ! self::$current_options['no_posts_footnotes'] ) {
+					if ( null === $post ) {
+						global $post;
+					}
+
+					/**
+					 * If there is a post object and there are settings stored assigned to it, that takes precedence.
+					 */
+					if ( isset( $post ) && \is_a( $post, '\WP_Post' ) && \property_exists( $post, 'ID' )
+					&& self::$current_post !== $post ) {
+
+						self::$current_post = $post;
+
+						$post_settings = \get_post_meta( $post->ID, Post_Settings::POST_SETTINGS_NAME, true );
+
+						if ( isset( $post_settings ) && ! empty( $post_settings ) ) {
+							self::$current_options = \array_merge( self::$current_options, $post_settings );
+						}
+					}
+
+					self::$current_options['footnotes_open']  = ( array_key_exists( 'footnotes_open', self::$current_options ) && ! empty( self::$current_options['footnotes_open'] ) ) ? self::$current_options['footnotes_open'] : self::get_default_options()['footnotes_open']; // That one can not be without a value.
+					self::$current_options['footnotes_close'] = ( array_key_exists( 'footnotes_close', self::$current_options ) && ! empty( self::$current_options['footnotes_close'] ) ) ? self::$current_options['footnotes_close'] : self::get_default_options()['footnotes_close']; // That one can not be without a value.
+				}
+			} elseif ( ! self::$current_options['no_posts_footnotes'] ) {
+				/**
+				 * Sometimes the init hits early and the settings are taken from the global options. With the following we are trying to merge the settings later on with the global post settings (if one is present)
+				 */
+				global $post;
+
+				/**
+				 * If there is a post object and there are settings stored assigned to it, that takes precedence.
+				 */
+				if ( isset( $post ) && \is_a( $post, '\WP_Post' ) && \property_exists( $post, 'ID' )
+				&& self::$current_post !== $post ) {
+
+					self::$current_post = $post;
+
+					$post_settings = \get_post_meta( $post->ID, Post_Settings::POST_SETTINGS_NAME, true );
+
+					if ( isset( $post_settings ) && ! empty( $post_settings ) ) {
+						self::$current_options = \array_merge( self::$current_options, $post_settings );
+
+						self::$current_options['footnotes_open']  = ( array_key_exists( 'footnotes_open', self::$current_options ) && ! empty( self::$current_options['footnotes_open'] ) ) ? self::$current_options['footnotes_open'] : self::get_default_options()['footnotes_open']; // That one can not be without a value.
+						self::$current_options['footnotes_close'] = ( array_key_exists( 'footnotes_close', self::$current_options ) && ! empty( self::$current_options['footnotes_close'] ) ) ? self::$current_options['footnotes_close'] : self::get_default_options()['footnotes_close']; // That one can not be without a value.
+					}
 				}
 			}
 
@@ -235,6 +346,7 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 					'no_editor_header_footer'  => false,
 					'no_display_post'          => false,
 					'position_before_footnote' => false,
+					'no_posts_footnotes'       => false,
 				);
 			}
 
@@ -273,7 +385,7 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 				\AWEF_SETTINGS_NAME,
 				array(
 					'\AWEF\Helpers\Settings',
-					'store_options',
+					'collect_and_sanitize_options',
 				)
 			);
 
@@ -330,7 +442,7 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 					}
 
 					if ( ! empty( $options ) && is_array( $options ) ) {
-						\update_option( AWEF_SETTINGS_NAME, self::store_options( $options ) );
+						\update_option( AWEF_SETTINGS_NAME, self::collect_and_sanitize_options( $options ) );
 					}
 				}
 
@@ -366,8 +478,8 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 		 * @since 2.0.0
 		 */
 		public static function render() {
-			\wp_enqueue_script( 'awef-admin-scripts', \AWEF_PLUGIN_ROOT_URL . '/js/admin/awef-settings.js', array( 'jquery', 'jquery-ui-sortable', 'jquery-ui-draggable', 'wp-color-picker', 'jquery-ui-autocomplete' ), \AWEF_VERSION, false );
-			\wp_enqueue_style( 'awef-admin-style', \AWEF_PLUGIN_ROOT_URL . '/css/admin/style.css', array(), \AWEF_VERSION, 'all' );
+			\wp_enqueue_script( 'awef-admin-scripts', \AWEF_PLUGIN_ROOT_URL . 'js/admin/awef-settings.js', array( 'jquery', 'jquery-ui-sortable', 'jquery-ui-draggable', 'wp-color-picker', 'jquery-ui-autocomplete' ), \AWEF_VERSION, false );
+			\wp_enqueue_style( 'awef-admin-style', \AWEF_PLUGIN_ROOT_URL . 'css/admin/style.css', array(), \AWEF_VERSION, 'all' );
 
 			self::awef_show_options();
 		}
@@ -479,6 +591,8 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 
 			$settings_tabs = array(
 
+				'head-post'   => esc_html__( 'Footnotes', 'awesome-footnotes' ),
+
 				'general'     => array(
 					'icon'  => 'admin-generic',
 					'title' => esc_html__( 'General', 'awesome-footnotes' ),
@@ -493,6 +607,8 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 					'icon'  => 'admin-settings',
 					'title' => esc_html__( 'Options', 'awesome-footnotes' ),
 				),
+
+				'head-global' => esc_html__( 'Global Settings', 'awesome-footnotes' ),
 
 				'advanced'    => array(
 					'icon'  => 'admin-tools',
@@ -559,12 +675,12 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 							</g>
 						</svg>
 					</div>
-					<div class="plugin-name" style="color: #fff; text-align: center; font-size: 1.4em; padding: 30px 0;"><?php echo \esc_html( AWEF_NAME ); ?></div>
 
 					<ul>
-						<?php
-						foreach ( $settings_tabs as $tab => $settings ) {
+					<?php
+					foreach ( $settings_tabs as $tab => $settings ) {
 
+						if ( ! empty( $settings['title'] ) ) {
 							$icon  = $settings['icon'];
 							$title = $settings['title'];
 							?>
@@ -572,44 +688,74 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 							<li class="awef-tabs awef-options-tab-<?php echo \esc_attr( $tab ); ?>">
 								<a href="#awef-options-tab-<?php echo \esc_attr( $tab ); ?>">
 									<span class="dashicons-before dashicons-<?php echo \esc_html( $icon ); ?> awef-icon-menu"></span>
-									<?php echo \esc_html( $title ); ?>
+								<?php echo \esc_html( $title ); ?>
 								</a>
 							</li>
+						<?php } else { ?>
+							<li class="awef-tab-menu-head"><?php echo $settings; ?></li>
 							<?php
 						}
+					}
 
-						?>
+					?>
 					</ul>
 					<div class="clear"></div>
 				</div> <!-- .awef-panel-tabs -->
 
 				<div class="awef-panel-content">
 
-					<div id="awef-options-search-wrap">
-						<input id="awef-panel-search" type="text" placeholder="<?php esc_html_e( 'Search', 'awesome-footnotes' ); ?>">
-						<div id="awef-search-list-wrap" class="has-custom-scroll">
-							<ul id="awef-search-list"></ul>
-						</div>
-					</div>
-
-
 					<form method="post" name="awef_form" id="awef_form" enctype="multipart/form-data">
+
+						<div class="awef-tab-head">
+							<div id="awef-options-search-wrap">
+								<input id="awef-panel-search" type="text" placeholder="<?php esc_html_e( 'Search', 'awesome-footnotes' ); ?>">
+								<div id="awef-search-list-wrap" class="has-custom-scroll">
+									<ul id="awef-search-list"></ul>
+								</div>
+							</div>
+
+							<div class="awefpanel-head-elements">
+
+							<?php do_action( 'awef_settings_save_button' ); ?>
+
+							
+								<ul>
+									<li>
+										<div id="awefpanel-darkskin-wrap">
+											<span class="darkskin-label"><svg height="512" viewBox="0 0 512 512" width="512" xmlns="http://www.w3.org/2000/svg"><title/><line style="fill:none;stroke:#000;stroke-linecap:round;stroke-miterlimit:10;stroke-width:32px" x1="256" x2="256" y1="48" y2="96"/><line style="fill:none;stroke:#000;stroke-linecap:round;stroke-miterlimit:10;stroke-width:32px" x1="256" x2="256" y1="416" y2="464"/><line style="fill:none;stroke:#000;stroke-linecap:round;stroke-miterlimit:10;stroke-width:32px" x1="403.08" x2="369.14" y1="108.92" y2="142.86"/><line style="fill:none;stroke:#000;stroke-linecap:round;stroke-miterlimit:10;stroke-width:32px" x1="142.86" x2="108.92" y1="369.14" y2="403.08"/><line style="fill:none;stroke:#000;stroke-linecap:round;stroke-miterlimit:10;stroke-width:32px" x1="464" x2="416" y1="256" y2="256"/><line style="fill:none;stroke:#000;stroke-linecap:round;stroke-miterlimit:10;stroke-width:32px" x1="96" x2="48" y1="256" y2="256"/><line style="fill:none;stroke:#000;stroke-linecap:round;stroke-miterlimit:10;stroke-width:32px" x1="403.08" x2="369.14" y1="403.08" y2="369.14"/><line style="fill:none;stroke:#000;stroke-linecap:round;stroke-miterlimit:10;stroke-width:32px" x1="142.86" x2="108.92" y1="142.86" y2="108.92"/><circle cx="256" cy="256" r="80" style="fill:none;stroke:#000;stroke-linecap:round;stroke-miterlimit:10;stroke-width:32px"/></svg></span>
+											<input id="awefpanel-darkskin" class="awef-js-switch" type="checkbox" value="true">
+											<span class="darkskin-label"><svg height="512" viewBox="0 0 512 512" width="512" xmlns="http://www.w3.org/2000/svg"><title/><path d="M160,136c0-30.62,4.51-61.61,16-88C99.57,81.27,48,159.32,48,248c0,119.29,96.71,216,216,216,88.68,0,166.73-51.57,200-128-26.39,11.49-57.38,16-88,16C256.71,352,160,255.29,160,136Z" style="fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/></svg></span>
+											<script>
+												if( 'undefined' != typeof localStorage ){
+													var skin = localStorage.getItem('awef-backend-skin');
+													if( skin == 'dark' ){
+														document.getElementById('awefpanel-darkskin').setAttribute('checked', 'checked');
+													}
+												}
+											</script>
+										</div>
+									</li>
+
+								</ul>
+							</div>
+						</div>
 
 						<?php
 						foreach ( $settings_tabs as $tab => $settings ) {
-
-							?>
+							if ( ! empty( $settings['title'] ) ) {
+								?>
 						<!-- <?php echo \esc_attr( $tab ); ?> Settings -->
 						<div id="awef-options-tab-<?php echo \esc_attr( $tab ); ?>" class="tabs-wrap">
 
-							<?php
-							include_once \AWEF_PLUGIN_ROOT . 'classes/settings/settings-options/' . $tab . '.php';
+								<?php
+								include_once \AWEF_PLUGIN_ROOT . 'classes/settings/settings-options/' . $tab . '.php';
 
-							\do_action( 'awef_plugin_options_tab_' . $tab );
-							?>
+								\do_action( 'awef_plugin_options_tab_' . $tab );
+								?>
 
 						</div>
-							<?php
+								<?php
+							}
 						}
 						?>
 
@@ -618,7 +764,7 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 
 						<div class="awef-footer">
 
-							<?php \do_action( 'awef_settings_save_button' ); ?>
+						<?php \do_action( 'awef_settings_save_button' ); ?>
 						</div>
 					</form>
 
@@ -627,7 +773,7 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 
 			</div><!-- .awef-panel -->
 
-			<?php
+						<?php
 		}
 
 		/**

@@ -611,9 +611,9 @@ if ( ! class_exists( '\AWEF\Helpers\System_Status' ) ) {
 						<td data-export-label="Version"><?php esc_html_e( 'Version', 'awesome-footnotes' ); ?>:</td>
 						<td>
 						<?php
-							esc_html_e( $theme['parent_version'] );
+						esc_html_e( $theme['parent_version'] );
 
-						if ( ! $theme['is_child_theme'] && version_compare( $theme['parent_version'], $theme['version_latest'], '<' ) ) {
+						if ( ! $theme['is_child_theme'] && version_compare( (string) $theme['parent_version'], (string) $theme['version_latest'], '<' ) ) {
 							echo ' &ndash; <strong style="color:red;">' . sprintf( esc_html__( '%s is available', 'awesome-footnotes' ), esc_html( $theme['version_latest'] ) ) . '</strong>';
 						}
 						?>
@@ -744,7 +744,7 @@ if ( ! class_exists( '\AWEF\Helpers\System_Status' ) ) {
 							}
 
 							if ( false != $plugin['network_activated'] ) {
-								$network_string = ' &ndash; <strong style="color:black;">' . esc_html__( 'Network enabled', 'awesome-footnotes' ) . '</strong>';
+								$network_string = ' &ndash; <strong>' . esc_html__( 'Network enabled', 'awesome-footnotes' ) . '</strong>';
 							}
 
 							?>

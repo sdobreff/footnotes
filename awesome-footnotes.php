@@ -12,7 +12,7 @@
  *
  * Plugin Name:     Footnotes
  * Description:     Allows post authors to easily add and manage footnotes in posts.
- * Version:         3.7.0
+ * Version:         3.8.0
  * Author:          Footnotes
  * Author URI:      https://quotecites.com
  * Text Domain:     awesome-footnotes
@@ -28,7 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'We\'re sorry, but you can not directly access this file.' );
 }
 
-define( 'AWEF_VERSION', '3.7.0' );
+define( 'AWEF_VERSION', '3.8.0' );
 define( 'AWEF_TEXTDOMAIN', 'awesome-footnotes' );
 define( 'AWEF_NAME', 'Footnotes' );
 define( 'AWEF_PLUGIN_ROOT', \plugin_dir_path( __FILE__ ) );
@@ -38,7 +38,7 @@ define( 'AWEF_PLUGIN_ABSOLUTE', __FILE__ );
 define( 'AWEF_MIN_PHP_VERSION', '7.4' );
 define( 'AWEF_WP_VERSION', '6.0' );
 define( 'AWEF_SETTINGS_NAME', 'awef_footnote_options' );
-define( 'AWEF_TEMPLATE_DIR', AWEF_PLUGIN_ROOT . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR );
+define( 'AWEF_TEMPLATE_DIR', AWEF_PLUGIN_ROOT . 'templates' . DIRECTORY_SEPARATOR );
 
 if ( version_compare( PHP_VERSION, AWEF_MIN_PHP_VERSION, '<=' ) ) {
 	\add_action(

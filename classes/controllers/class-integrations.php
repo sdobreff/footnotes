@@ -41,9 +41,34 @@ if ( ! class_exists( '\AWEF\Controllers\Integrations' ) ) {
 
 				\add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_styles' ) );
 
+				\add_action( 'admin_head', array( __CLASS__, 'options_dark_skin' ) );
+
 				foreach ( array( 'post.php', 'post-new.php' ) as $hook ) {
 					\add_action( "admin_head-$hook", array( __CLASS__, 'admin_head' ) );
 				}
+			}
+		}
+
+		/**
+		 * Adds JS to set the Dark Skin based on user selections (in browser local storage)
+		 *
+		 * @return void
+		 *
+		 * @since 3.8.0
+		 */
+		public static function options_dark_skin() {
+			if ( Settings::is_plugin_settings_page() ) {
+				?>
+				<script>
+					if( 'undefined' != typeof localStorage ){
+						var skin = localStorage.getItem('awef-backend-skin');
+						if( skin == 'dark' ){
+							var html = document.getElementsByTagName('html')[0].classList;
+							html.add('awef-darkskin');
+						}
+					}
+				</script>
+				<?php
 			}
 		}
 

@@ -1,9 +1,9 @@
-=== WordPress Footnotes ===
+=== Footnotes & Content ===
 Tags: footnotes, formatting, notes, reference
 Requires at least: 6.0
 Tested up to: 6.6.1
 Requires PHP: 7.4
-Stable tag: 3.7.0
+Stable tag: 3.8.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -11,7 +11,7 @@ Allows post authors to easily add and manage footnotes in posts.
 
 == Description ==
 
-**WordPress Footnotes** plugin is a powerful method of adding **footnotes** into your posts and pages. You can have as many **footnotes** as you like pretty easily in every page, post or ACF block, WooCommerce is also supported. That is the fastest footnote plugin which is using extremely low resources - you wont even notice that it is there.
+**Footnotes & Content** plugin is a powerful method of adding **footnotes** into your posts and pages. You can have as many **footnotes** as you like pretty easily in every page, post or ACF block, WooCommerce is also supported. That is the fastest footnote plugin which is using extremely low resources - you wont even notice that it is there.
 
 You can visit the [Github page](https://github.com/sdobreff/footnotes/ "Github") for the latest code development, or if you want to report an issue with the code.
 
@@ -25,8 +25,9 @@ You can visit the [Github page](https://github.com/sdobreff/footnotes/ "Github")
 * Option to display ‘pretty’ tooltips using jQuery
 * Option to display footnotes as tooltips using vanilla JS
 * Lots of configuration options
+* Different footnotes settings per post - you can use different settings on Post level - changing styles and UI
 
-**WordPress Footnotes** plugin is designed to ease the creation of a new footnote. It also gives you the ability to easily switch from most of the existing **footnotes** plugins to this one. Lets face it - almost 100% of them are abandoned or in awful condition. It supports PHP8, it is written using best practices and follows the WordPress standards, give it a try. You can quickly check the plugin [here](https://playground.wordpress.net/?plugin=awesome-footnotes&networking=yes "WP Playground")
+**Footnotes & Content** plugin is designed to ease the creation of a new footnote. It also gives you the ability to easily switch from most of the existing **footnotes** plugins to this one. Lets face it - almost 100% of them are abandoned or in awful condition. It supports PHP8, it is written using best practices and follows the WordPress standards, give it a try. You can quickly check the plugin [here](https://playground.wordpress.net/?plugin=awesome-footnotes&networking=yes "WP Playground")
 
 ## Technical specification...
 
@@ -60,6 +61,8 @@ What plugin does is to keep track of the footnotes and keep proper numbering amo
 
 **WooCommerce** (including new product editor) is also supported.
 
+Unlike any other plugin, this one gives you the ability to have different settings for different posts. When editing post, you can change the setting for the plugin which will apply for that specific post, and others will keep using the global settings. If you think that this is too much, you can always disable this from advanced settings.
+
 == Other plugins compatibility ==
 
 There are plugins with which that one is 100% compatible - meaning that you can directly jump from them to this one:
@@ -92,7 +95,7 @@ Even though it's a little more typing, using the exact text method is much more 
 
 == Installation ==
 
-Awesome Footnotes can be found and installed via the Plugin menu within WordPress administration (Plugins -> Add New). Alternatively, it can be downloaded from WordPress.org and installed manually...
+**Footnotes & Content** can be found and installed via the Plugin menu within WordPress administration (Plugins -> Add New). Alternatively, it can be downloaded from WordPress.org and installed manually...
 
 1. Upload the entire `awesome-footnotes` folder to your `wp-content/plugins/` directory.
 2. Activate the plugin through the 'Plugins' menu in WordPress administration.
@@ -130,8 +133,13 @@ Yes. You can use the Awesome Footnotes button in the toolbar of the Block Editor
 2. The settings screen with advanced settings shown
 3. Plugin in Gutenberg editor
 4. Plugin in standard editor
+5. Plugin settings in Gutenberg editor
+6. Plugin in standard editor
 
 == Change Log ==
+= 3.8.0 =
+Speed optimizations and lots of bugs fixed, related to showing the footnotes proper symbol selection. As of this version you can set different options for the footnotes on post level - that means, that you can have different footnotes formatting for every single post. New settings UI - now supporting dark mode as well.
+
 = 3.7.0 =
 New AJAX class is introduced for speeding the plugin work. Now separate template file is used to show the footnotes, it can be overwritten from withing the theme. New vanilla JS to show the footnotes is introduced - no external libraries dependencies.
 

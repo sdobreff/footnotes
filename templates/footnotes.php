@@ -5,11 +5,11 @@
  * @package awesome-footnotes
  */
 
-?>
+use AWEF\Controllers\Footnotes_Formatter;
 
-<?php
+global $footnotes_block, $footnotes_header, $footnotes_footer, $start, $awe_post_id;
 
-global $footnotes_block, $footnotes_header, $footnotes_footer, $start;
+Footnotes_Formatter::insert_styles($awe_post_id);
 
 if ( ! empty( $footnotes_header ) ) {
 	?>
@@ -19,7 +19,7 @@ if ( ! empty( $footnotes_header ) ) {
 	<?php
 }
 ?>
-<ol <?php echo $start; ?> class="footnotes">
+<ol <?php echo $start; ?> class="footnotes awepost_<?php echo \esc_attr( $awe_post_id ); ?>">
 	<?php
 	if ( ! empty( $footnotes_block ) ) {
 		echo $footnotes_block;

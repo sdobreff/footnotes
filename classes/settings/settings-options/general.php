@@ -122,7 +122,7 @@ use AWEF\Controllers\Footnotes_Formatter;
 	</style>
 	<?php
 
-	$before_position         = Settings::get_current_options()['position_before_footnote'];
+	$before_position = Settings::get_current_options()['position_before_footnote'];
 	$back_link_title = Settings::get_current_options()['back_link_title'];
 
 	if ( false !== \mb_strpos( $back_link_title, '###' ) ) {
@@ -137,7 +137,7 @@ use AWEF\Controllers\Footnotes_Formatter;
 
 	ob_start();
 	?>
-	<ol class="footnotes">
+	<ol class="footnotes awepost_0">
 		<li id="footnote_0_1" class="footnote">
 			<span class="symbol"><?php echo html_entity_decode( Settings::get_current_options()['list_style_symbol'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 

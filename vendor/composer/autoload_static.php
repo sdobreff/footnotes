@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitcfdb79b3161cca532bdaefc1d0b65af6
+class ComposerStaticInitbda2fadb3db7a0d01c25890e5d37d67b
 {
     public static $prefixLengthsPsr4 = array (
         'A' => 
@@ -25,6 +25,7 @@ class ComposerStaticInitcfdb79b3161cca532bdaefc1d0b65af6
         'AWEF\\Controllers\\Footnotes_Formatter' => __DIR__ . '/../..' . '/classes/controllers/class-footnotes-formatter.php',
         'AWEF\\Controllers\\Integrations' => __DIR__ . '/../..' . '/classes/controllers/class-integrations.php',
         'AWEF\\Controllers\\Pointers' => __DIR__ . '/../..' . '/classes/controllers/class-pointers.php',
+        'AWEF\\Controllers\\Post_Settings' => __DIR__ . '/../..' . '/classes/controllers/class-post-settings.php',
         'AWEF\\Helpers\\Ajax' => __DIR__ . '/../..' . '/classes/helpers/class-ajax.php',
         'AWEF\\Helpers\\Context_Helper' => __DIR__ . '/../..' . '/classes/helpers/class-context-helper.php',
         'AWEF\\Helpers\\Review_Plugin' => __DIR__ . '/../..' . '/classes/helpers/class-review-plugin.php',
@@ -40,9 +41,9 @@ class ComposerStaticInitcfdb79b3161cca532bdaefc1d0b65af6
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitcfdb79b3161cca532bdaefc1d0b65af6::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitcfdb79b3161cca532bdaefc1d0b65af6::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitcfdb79b3161cca532bdaefc1d0b65af6::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitbda2fadb3db7a0d01c25890e5d37d67b::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitbda2fadb3db7a0d01c25890e5d37d67b::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitbda2fadb3db7a0d01c25890e5d37d67b::$classMap;
 
         }, null, ClassLoader::class);
     }
