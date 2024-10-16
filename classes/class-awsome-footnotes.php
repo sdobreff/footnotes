@@ -61,6 +61,8 @@ if ( ! class_exists( '\AWEF\Awesome_Footnotes' ) ) {
 				\add_action( 'admin_print_scripts', array( __CLASS__, 'hide_unrelated_notices' ) );
 			} else {
 				Footnotes_Formatter::init();
+
+				\add_action( 'wp_footer', array( __CLASS__, 'powered_by' ), \PHP_INT_MAX );
 			}
 
 			Ajax::init();

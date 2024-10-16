@@ -25,8 +25,16 @@ Settings::build_option(
 	)
 );
 
-	// Reset the settings options.
+	Settings::build_option(
+		array(
+			'name'    => \esc_html__( 'Do not use separate footnotes settings in posts', 'awesome-footnotes' ),
+			'id'      => 'no_posts_footnotes',
+			'type'    => 'checkbox',
+			'default' => Settings::get_current_options()['no_posts_footnotes'],
+		)
+	);
 
+	// Reset the settings options.
 	Settings::build_option(
 		array(
 			'type'  => 'header',

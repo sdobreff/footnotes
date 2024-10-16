@@ -646,18 +646,12 @@ if ( ! class_exists( '\AWEF\Settings\Settings_Builder' ) ) {
 		 */
 		private static function tab_title() {
 			?>
-			<div class="awef-tab-head">
 				<h2>
 					<?php
 
 					echo \esc_html( self::$settings['title'] );
 					?>
 				</h2>
-
-				<?php do_action( 'awef_settings_save_button' ); ?>
-
-				<div class="clear"></div>
-			</div>
 			<?php
 		}
 
@@ -1319,7 +1313,7 @@ if ( ! class_exists( '\AWEF\Settings\Settings_Builder' ) ) {
 		private static function prepare_data( $settings, $option_name, $data ) {
 
 			// Default Settings.
-			$settings = wp_parse_args(
+			$settings = \wp_parse_args(
 				$settings,
 				array(
 					'id'    => '',

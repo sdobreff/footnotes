@@ -114,8 +114,6 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 
 			\add_filter( 'acf/format_value', array( __CLASS__, 'acf_format_value' ), Settings::get_current_options()['priority'], 3 );
 
-			\add_action( 'wp_head', array( __CLASS__, 'insert_styles' ) );
-
 			\add_shortcode( self::SHORTCODE_NAME, array( __CLASS__, 'show_footnotes' ) );
 
 			if ( Settings::get_current_options()['pretty_tooltips']
@@ -195,17 +193,22 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 		 * Insert additional CSS
 		 *
 		 * Add additional CSS to the page for the footnotes styling
+		 * 
+		 *  @param int $post_id - ID of the post to create styles for.
 		 *
 		 * @since 2.0.0
 		 */
-		public static function insert_styles() {
+		public static function insert_styles( $post_id = null ) {
+			if ( null === $post_id ) {
+				$post_id = 0;
+			}
 			?>
 			<style>
 			<?php if ( 'symbol' !== Settings::get_current_options()['list_style_type'] ) { ?>
-				ol.footnotes>li {list-style-type:<?php echo \esc_attr( Settings::get_current_options()['list_style_type'] ); ?>;}
-				ol.footnotes>li>span.symbol {display: none;}
+				ol.footnotes.awepost_<?php echo \esc_attr( $post_id ); ?>>li {list-style-type:<?php echo \esc_attr( Settings::get_current_options()['list_style_type'] ); ?>;}
+				ol.footnotes.awepost_<?php echo \esc_attr( $post_id ); ?>>li>span.symbol {display: none;}
 			<?php } else { ?>
-				ol.footnotes>li {list-style-type:none};
+				ol.footnotes.awepost_<?php echo \esc_attr( $post_id ); ?>>li {list-style-type:none};
 			<?php } echo Settings::get_current_options()['css_footnotes']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			</style>
 			<?php
@@ -269,7 +272,7 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 			if ( Settings::get_current_options()['vanilla_js_tooltips'] ) {
 				echo '
 				<script type="module">
-				import footnotes from "' . \AWEF_PLUGIN_ROOT_URL . 'js/endnotes.js?' . \rand() . '"
+				import footnotes from "' . \esc_url( \AWEF_PLUGIN_ROOT_URL ) . 'js/endnotes.js?' . \esc_attr( \wp_rand() ) . '"
 				let opt = {
 				// before_hook: anchor => {
 				// document.querySelector(\'h1\').style.color = \'red\'
@@ -429,7 +432,7 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 
 				$id_id = self::HTML_TAG_NAME . $key + $start_number . '_' . $inner_post->ID;
 
-				$id_num_text = ( 'decimal' === $style ) ? $identifier['position_number'] : self::convert_num( $identifier['use_footnote'], $style, $key );
+				$id_num_text = ( 'decimal' === $style ) ? $identifier['position_number'] : self::convert_num( $identifier['use_footnote'] + $start_number, $style, $key );
 
 				$id_href    = ( ( $use_full_link ) ? \get_permalink( $inner_post->ID ) : '' ) . '#footnote_' . ( $identifier['use_footnote'] + $start_number ) . '_' . $inner_post->ID;
 				$id_title   = str_replace( '"', '&quot;', htmlentities( html_entity_decode( \wp_strip_all_tags( $identifier['text'] ), ENT_QUOTES, 'UTF-8' ), ENT_QUOTES, 'UTF-8' ) );
@@ -595,12 +598,13 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 				}
 			}
 
-			global $footnotes_markup, $footnotes_block, $footnotes_header, $footnotes_footer, $start;
+			global $footnotes_markup, $footnotes_block, $footnotes_header, $footnotes_footer, $start, $awe_post_id;
 
 			$footnotes_markup = '';
 			$footnotes_block  = '';
 			$footnotes_header = '';
 			$footnotes_footer = '';
+			$awe_post_id      = $post->ID;
 
 			/**
 			 * Gives the ability to change the footnotes header to something else
@@ -688,9 +692,9 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 			}
 
 			/**
-			 * Gives the ability to change the footnotes header to something else
+			 * Gives the ability to change the footnotes footer to something else
 			 *
-			 * @param string - The parsed footnotes header.
+			 * @param string - The parsed footnotes footer.
 			 *
 			 * @since 2.4.0
 			 */
@@ -700,7 +704,7 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 			self::get_template( '', 'footnotes' );
 
 			$footnotes_markup .= \ob_get_contents();
-			
+
 			\ob_end_clean();
 
 			/**
@@ -715,20 +719,34 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 			return $footnotes_markup;
 		}
 
-		public static function get_template( $subfolder, $file ) {
+		/**
+		 * Includes the footnotes template serches in the theme for the template, falls back to the default if one is not presented
+		 *
+		 * @param string $subfolder - The subfolder name.
+		 * @param string $file - The file name.
+		 *
+		 * @return void
+		 *
+		 * @since 3.7.0
+		 */
+		public static function get_template( string $subfolder, string $file ) {
 			$real_file = $file . '.php';
 
-			// Look for a file in theme.
-			if ( $theme_template = \locate_template( AWEF_TEXTDOMAIN . \DIRECTORY_SEPARATOR . $subfolder . \DIRECTORY_SEPARATOR . $real_file ) ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.Found, Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure
+			if ( ! empty( $subfolder ) ) {
+				$subfolder = $subfolder . \DIRECTORY_SEPARATOR;
+			}
 
-				require_once $theme_template;
+			// Look for a file in theme.
+			if ( $theme_template = \locate_template( AWEF_TEXTDOMAIN . \DIRECTORY_SEPARATOR . $subfolder . $real_file ) ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.Found, Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure
+
+				require $theme_template;
 
 			} else {
 
 				// Nothing found, let's look in our plugin.
-				$plugin_template = AWEF_TEMPLATE_DIR . $subfolder . \DIRECTORY_SEPARATOR . $real_file;
+				$plugin_template = AWEF_TEMPLATE_DIR . $subfolder . $real_file;
 				if ( \file_exists( $plugin_template ) ) {
-					require_once $plugin_template;
+					require $plugin_template;
 				}
 			}
 		}
@@ -875,6 +893,9 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 					return self::alpha( $num );
 				case 'symbol':
 					$sym = '';
+					if ( 0 === $num ) {
+						$num = 1;
+					}
 					for ( $i = 0; $i < $num; $i++ ) {
 						$sym .= Settings::get_current_options()['list_style_symbol'];
 					}
@@ -898,7 +919,8 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 		 */
 		public static function roman( $num, $letter_case = 'upper' ) {
 
-			$num        = (int) $num;
+			$num = (int) $num;
+
 			$conversion = array(
 				'M'  => 1000,
 				'CM' => 900,
@@ -935,6 +957,8 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 		 * @since 2.0.0
 		 */
 		public static function alpha( $num, $target_case = 'upper' ) {
+			$num = (int) $num;
+
 			$j = 1;
 			for ( $i = 'A'; $i <= 'ZZ'; $i++ ) {
 				if ( $j === $num ) {

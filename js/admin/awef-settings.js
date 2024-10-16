@@ -153,6 +153,20 @@ $doc.ready(function () {
         brandColor = '#ccaf0b';
     }
 
+	/**
+	 * Back-end Dark Skin
+	 */
+	jQuery('#awefpanel-darkskin').change(function(){
+		var $html    = jQuery('html'),
+		switchTo = $html.hasClass('awef-darkskin') ? 'light' : 'dark';
+
+		$html.toggleClass('awef-darkskin');
+
+		if( 'undefined' != typeof localStorage ){
+			localStorage.setItem( 'awef-backend-skin', switchTo );
+		}
+	});
+
     //attachAllDynamicSelects();
     attachAllDynamicPostTypes();
 
@@ -225,7 +239,7 @@ $doc.ready(function () {
 
                     var thistextid = $thisElem.closest('.option-item').attr('id'),
                         $thisparent = jQuery(this).closest('.tabs-wrap'),
-                        thistextparent = $thisparent.find('.awef-tab-head h2').text(),
+                        thistextparent = $thisparent.find('h2').text(),
                         thistextparentid = $thisparent.attr('id');
 
                     $searchList.append('<li><a href="#" data-section="' + thistextid + '" data-url="' + thistextparentid + '"><strong>' + thistextparent + '</strong> / ' + thistext + '</a></li>');
@@ -575,7 +589,7 @@ $doc.ready(function () {
 
     var tabsHeight = jQuery('.awef-panel-tabs').outerHeight();
     jQuery('.tabs-wrap').hide();
-    jQuery('.awef-panel-tabs ul li:first').addClass('active').show();
+    jQuery('.awef-panel-tabs ul li.awef-tabs:first').addClass('active').show();
     jQuery('.tabs-wrap:first').show();
     jQuery('.awef-panel-content').css({ minHeight: tabsHeight });
 
