@@ -193,7 +193,7 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 		 * Insert additional CSS
 		 *
 		 * Add additional CSS to the page for the footnotes styling
-		 * 
+		 *
 		 *  @param int $post_id - ID of the post to create styles for.
 		 *
 		 * @since 2.0.0
@@ -398,6 +398,8 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 					if ( isset( self::$identifiers[ $inner_post->ID ] ) ) {
 						unset( self::$identifiers[ $inner_post->ID ] );
 					}
+
+					self::clear_vars();
 				}
 
 				return $data;
@@ -598,7 +600,7 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 				}
 			}
 
-			global $footnotes_markup, $footnotes_block, $footnotes_header, $footnotes_footer, $start, $awe_post_id;
+			global $footnotes_markup, $footnotes_block, $footnotes_header, $footnotes_footer, $awe_foot_start, $awe_post_id;
 
 			$footnotes_markup = '';
 			$footnotes_block  = '';
@@ -615,7 +617,7 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 			 */
 			$footnotes_markup = \apply_filters( 'awef_before_footnotes_markup', $footnotes_markup );
 
-			$start = ( 1 !== $start_number ) ? 'start="' . $start_number . '" ' : 'start="' . ( \array_key_first( $footnotes ) + 1 ) . '"';
+			$awe_foot_start = ( 1 !== $start_number ) ? 'start="' . $start_number . '" ' : 'start="' . ( \array_key_first( $footnotes ) + 1 ) . '"';
 
 			if ( ! empty( $footnotes_header = Settings::get_current_options()['pre_footnotes'] ) ) { // phpcs:ignore Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure
 				$footnotes_header =
@@ -981,6 +983,18 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 		 */
 		public static function get_styles(): array {
 			return self::$styles;
+		}
+
+		/**
+		 * Clears inner class variables
+		 *
+		 * @return void
+		 *
+		 * @since 3.8.1
+		 */
+		public static function clear_vars() {
+			self::$pos                = 0;
+			self::$block_starting_pos = -1;
 		}
 	}
 }

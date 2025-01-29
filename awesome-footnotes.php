@@ -2,7 +2,7 @@
 /**
  * Footnotes
  *
- * Easily add footnotes to a post
+ * Easily add footnotes and change context of a post
  *
  * @package   footnotes
  * @author    quotecites
@@ -12,7 +12,7 @@
  *
  * Plugin Name:     Footnotes
  * Description:     Allows post authors to easily add and manage footnotes in posts.
- * Version:         3.8.0
+ * Version:         3.8.1
  * Author:          Footnotes
  * Author URI:      https://quotecites.com
  * Text Domain:     awesome-footnotes
@@ -28,7 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'We\'re sorry, but you can not directly access this file.' );
 }
 
-define( 'AWEF_VERSION', '3.8.0' );
+define( 'AWEF_VERSION', '3.8.1' );
 define( 'AWEF_TEXTDOMAIN', 'awesome-footnotes' );
 define( 'AWEF_NAME', 'Footnotes' );
 define( 'AWEF_PLUGIN_ROOT', \plugin_dir_path( __FILE__ ) );
