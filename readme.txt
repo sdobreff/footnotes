@@ -1,9 +1,9 @@
 === Footnotes & Content ===
 Tags: footnotes, formatting, notes, reference
 Requires at least: 6.0
-Tested up to: 6.6.1
+Tested up to: 6.7.1
 Requires PHP: 7.4
-Stable tag: 3.8.0
+Stable tag: 3.8.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -137,6 +137,9 @@ Yes. You can use the Awesome Footnotes button in the toolbar of the Block Editor
 6. Plugin in standard editor
 
 == Change Log ==
+= 3.8.1 =
+Bug fix when excerpt call is made.
+
 = 3.8.0 =
 Speed optimizations and lots of bugs fixed, related to showing the footnotes proper symbol selection. As of this version you can set different options for the footnotes on post level - that means, that you can have different footnotes formatting for every single post. New settings UI - now supporting dark mode as well.
 
