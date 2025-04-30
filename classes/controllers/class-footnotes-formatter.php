@@ -574,7 +574,7 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 		 * @since 2.4.0
 		 * @since 3.0.0 - $footnotes and $start_number parameters added.
 		 */
-		private static function get_footnotes_markup( \WP_Post $post = null, bool $use_internal = false, array $footnotes = array(), int $start_number = 0 ): string {
+		private static function get_footnotes_markup( ?\WP_Post $post = null, bool $use_internal = false, array $footnotes = array(), int $start_number = 0 ): string {
 			// check against post existing before processing.
 			if ( ! $post ) {
 				global $post;
@@ -762,7 +762,7 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 		 *
 		 * @since 2.0.0
 		 */
-		public static function get_style( \WP_Post $post = null ) {
+		public static function get_style( ?\WP_Post $post = null ) {
 			// Check if this post is using a different list style to the settings.
 			if ( \get_post_meta( $post->ID, 'footnote_style', true ) && array_key_exists( \get_post_meta( $post->ID, 'footnote_style', true ), self::$styles ) ) {
 				$style = \get_post_meta( $post->ID, 'footnote_style', true );
@@ -990,7 +990,7 @@ if ( ! class_exists( '\AWEF\Controllers\Footnotes_Formatter' ) ) {
 		 *
 		 * @return void
 		 *
-		 * @since 3.8.1
+		 * @since 3.8.2
 		 */
 		public static function clear_vars() {
 			self::$pos                = 0;

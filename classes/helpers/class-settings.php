@@ -110,7 +110,7 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 			 */
 			\add_action( 'awef_settings_save_button', array( __CLASS__, 'save_button' ) );
 
-			Post_Settings::init();
+			\add_action( 'init', array( Post_Settings::class, 'init' ) );
 		}
 
 		/**
@@ -231,7 +231,7 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 		 * @since 2.0.0
 		 * @since 3.8.0 - The WP_Post option is added in order to override the the settings (if needed) with the once stored in the current post object (if passed.)
 		 */
-		public static function get_current_options( \WP_Post $post = null ): array {
+		public static function get_current_options( ?\WP_Post $post = null ): array {
 			if ( empty( self::$current_options ) ) {
 
 				// Get the current settings or setup some defaults if needed.

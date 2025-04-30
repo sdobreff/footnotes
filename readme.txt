@@ -1,9 +1,9 @@
 === Footnotes & Content ===
 Tags: footnotes, formatting, notes, reference
 Requires at least: 6.0
-Tested up to: 6.7.1
+Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 3.8.1
+Stable tag: 3.8.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -137,6 +137,9 @@ Yes. You can use the Awesome Footnotes button in the toolbar of the Block Editor
 6. Plugin in standard editor
 
 == Change Log ==
+= 3.8.2 =
+Small fixes related to new WordPress version 6.8.
+
 = 3.8.1 =
 Bug fix when excerpt call is made.
 
