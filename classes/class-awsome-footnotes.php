@@ -66,7 +66,7 @@ if ( ! class_exists( '\AWEF\Awesome_Footnotes' ) ) {
 				\add_action( 'wp_footer', array( __CLASS__, 'powered_by' ), \PHP_INT_MAX );
 			}
 
-			Post_Settings::init();
+			\add_action( 'init', array( Post_Settings::class, 'init' ) );
 
 			Ajax::init();
 		}
