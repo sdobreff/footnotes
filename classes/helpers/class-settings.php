@@ -29,7 +29,7 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 	 */
 	class Settings {
 
-		public const OPTIONS_VERSION = '12'; // Incremented when the options array changes.
+		public const OPTIONS_VERSION = '13'; // Incremented when the options array changes.
 
 		public const MENU_SLUG = 'awef_settings';
 
@@ -157,6 +157,8 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 
 			$footnotes_options['no_editor_header_footer'] = ( array_key_exists( 'no_editor_header_footer', $post_array ) ) ? filter_var( $post_array['no_editor_header_footer'], FILTER_VALIDATE_BOOLEAN ) : false;
 
+			$footnotes_options['seo_post_options'] = ( array_key_exists( 'seo_post_options', $post_array ) ) ? filter_var( $post_array['seo_post_options'], FILTER_VALIDATE_BOOLEAN ) : false;
+
 			$footnotes_options['combine_identical_notes'] = ( array_key_exists( 'combine_identical_notes', $post_array ) ) ? filter_var( $post_array['combine_identical_notes'], FILTER_VALIDATE_BOOLEAN ) : false;
 			$footnotes_options['priority']                = ( array_key_exists( 'priority', $post_array ) ) ? \sanitize_text_field( $post_array['priority'] ) : self::get_default_options()['priority'];
 
@@ -231,7 +233,7 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 		 * @since 2.0.0
 		 * @since 3.8.0 - The WP_Post option is added in order to override the the settings (if needed) with the once stored in the current post object (if passed.)
 		 */
-		public static function get_current_options( \WP_Post $post = null ): array {
+		public static function get_current_options( ?\WP_Post $post = null ): array {
 			if ( empty( self::$current_options ) ) {
 
 				// Get the current settings or setup some defaults if needed.
@@ -344,6 +346,7 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 					'back_link_title'          => \__( 'Jump back to text', 'awesome-footnotes' ),
 					'css_footnotes'            => 'ol.footnotes { color:#666666; }' . "\n" . 'ol.footnotes li { font-size:80%; }',
 					'no_editor_header_footer'  => false,
+					'seo_post_options'         => false,
 					'no_display_post'          => false,
 					'position_before_footnote' => false,
 					'no_posts_footnotes'       => false,
