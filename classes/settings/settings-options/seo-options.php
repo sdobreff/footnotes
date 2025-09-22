@@ -21,17 +21,27 @@ use AWEF\Controllers\Post_Settings;
 	// Meta description.
 	Settings::build_option(
 		array(
-			'title' => esc_html__( 'Meta description', 'awesome-footnotes' ),
+			'title' => esc_html__( 'SEO meta', 'awesome-footnotes' ),
 			'id'    => 'markup-format-settings',
 			'type'  => 'header',
 		)
 	);
 
-	$current_post          = \get_post();
+	$current_post = \get_post();
 
 	if ( empty( $current_post->post_excerpt ) ) {
 		$current_post->post_excerpt = Post_Settings::the_short_content( 160, $current_post->post_content );
 	}
+
+	Settings::build_option(
+		array(
+			'name'    => \esc_html__( 'Title', '0-day-analytics' ),
+			'id'      => 'seo_title',
+			'type'    => 'text',
+			'hint'    => \esc_html__( 'Fill this if you want to use custom post title in SEO header of the post', '0-day-analytics' ),
+			'default' => Post_Settings::get_post_seo_title( $current_post ),
+		)
+	);
 
 	Settings::build_option(
 		array(
