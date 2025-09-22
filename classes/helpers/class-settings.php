@@ -109,8 +109,6 @@ if ( ! class_exists( '\AWEF\Helpers\Settings' ) ) {
 			 * Draws the save button in the settings
 			 */
 			\add_action( 'awef_settings_save_button', array( __CLASS__, 'save_button' ) );
-
-			Post_Settings::init();
 		}
 
 		/**

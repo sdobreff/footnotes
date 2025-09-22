@@ -132,22 +132,3 @@ use AWEF\Helpers\Settings;
 			. '</div>',
 		)
 	);
-
-	// Posts SEO optins.
-	Settings::build_option(
-		array(
-			'title' => \esc_html__( 'Use plugin SEO options in posts', '0-day-analytics' ),
-			'id'    => 'global-seo-post-settings',
-			'type'  => 'header',
-		)
-	);
-
-	Settings::build_option(
-		array(
-			'name'    => \esc_html__( 'Use plugin SEO post options', '0-day-analytics' ),
-			'id'      => 'seo_post_options',
-			'type'    => 'checkbox',
-			'default' => Settings::get_current_options()['seo_post_options'],
-			'hint'    => \esc_html__( 'Enable this if you want to use plugin SEO options in posts. Keep in mid that the plugin uses Posts excerpt field to store the Meta description!', 'awesome-footnotes' ),
-		)
-	);

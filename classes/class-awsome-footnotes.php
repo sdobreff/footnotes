@@ -14,14 +14,15 @@ declare(strict_types=1);
 
 namespace AWEF;
 
-use AWEF\Migration\Migration;
-use AWEF\Helpers\Settings;
-use AWEF\Helpers\Review_Plugin;
-use AWEF\Controllers\Integrations;
-use AWEF\Controllers\Footnotes_Formatter;
-use AWEF\Controllers\Pointers;
 use AWEF\Helpers\Ajax;
+use AWEF\Helpers\Settings;
+use AWEF\Migration\Migration;
+use AWEF\Controllers\Pointers;
+use AWEF\Helpers\Review_Plugin;
 use AWEF\Helpers\Context_Helper;
+use AWEF\Controllers\Integrations;
+use AWEF\Controllers\Post_Settings;
+use AWEF\Controllers\Footnotes_Formatter;
 
 if ( ! class_exists( '\AWEF\Awesome_Footnotes' ) ) {
 
@@ -64,6 +65,8 @@ if ( ! class_exists( '\AWEF\Awesome_Footnotes' ) ) {
 
 				\add_action( 'wp_footer', array( __CLASS__, 'powered_by' ), \PHP_INT_MAX );
 			}
+
+			Post_Settings::init();
 
 			Ajax::init();
 		}
